@@ -257,6 +257,59 @@ app.put('/api/auth/profile', authenticate_token, async (req, res) => {
   }
 });
 
+// WORKOUT ROUTES
+
+// Get all workout categories
+app.get('/api/workout-categories', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM workout_categories ORDER BY id ASC');
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching workout categories:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Get workouts (optionally filter by category_id)
+app.get('/api/workouts', async (req, res) => {
+  try {
+    const { category_id } = req.query;
+    let query = 'SELECT * FROM workouts';
+    const params = [];
+
+    if (category_id) {
+      query += ' WHERE category_id = $1';
+      params.push(category_id);
+    }
+    
+    query += ' ORDER BY title ASC';
+
+    const result = await pool.query(query, params);
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching workouts:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Get single workout details
+app.get('/api/workouts/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await pool.query('SELECT * FROM workouts WHERE id = $1', [id]);
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Workout not found' });
+    }
+
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error('Error fetching workout details:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+
 // Example protected endpoint
 app.get('/api/protected', authenticate_token, (req, res) => {
   res.json({

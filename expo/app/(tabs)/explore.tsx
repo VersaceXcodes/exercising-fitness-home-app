@@ -1,146 +1,211 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, ScrollView, ActivityIndicator, RefreshControl, TouchableOpacity } from 'react-native';
+import { StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, View, ImageBackground } from 'react-native';
 import { Image } from 'expo-image';
 
 import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Fonts } from '@/constants/theme';
 import { apiService } from '@/services/api';
-import { useAuth } from '@/contexts/AuthContext';
 
-interface Property {
-  property_id: string;
-  title: string;
+interface Category {
+  id: number;
+  name: string;
   description: string;
-  property_type: string;
-  address: string;
-  city: string;
-  country: string;
-  price_per_night: number;
-  guest_capacity: number;
-  bedroom_count: number;
-  bathroom_count: number;
-  rating?: number;
-  review_count?: number;
-  photos?: Array<{
-    photo_id: string;
-    photo_url: string;
-    is_primary: boolean;
-  }>;
+  image_url: string;
 }
 
-export default function TabTwoScreen() {
-  const [properties, setProperties] = useState<Property[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const { isAuthenticated } = useAuth();
+interface Workout {
+  id: number;
+  category_id: number;
+  title: string;
+  description: string;
+  duration_minutes: number;
+  difficulty_level: string;
+  image_url: string;
+}
 
-  const loadProperties = async () => {
+export default function WorkoutsScreen() {
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [workouts, setWorkouts] = useState<Workout[]>([]);
+  
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+  const [selectedWorkout, setSelectedWorkout] = useState<Workout | null>(null);
+  
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Load Categories on mount
+  useEffect(() => {
+    loadCategories();
+  }, []);
+
+  // Load Workouts when category is selected
+  useEffect(() => {
+    if (selectedCategory) {
+      loadWorkouts(selectedCategory.id);
+    }
+  }, [selectedCategory]);
+
+  const loadCategories = async () => {
     try {
+      setLoading(true);
       setError(null);
-      const response = await apiService.getProperties({
-        limit: 20,
-        offset: 0
-      });
-      
-      if (response.data) {
-        setProperties(response.data);
+      const response = await apiService.getWorkoutCategories();
+      // Use type assertion or validation here if needed, assuming response is array
+      if (Array.isArray(response)) {
+        setCategories(response);
+      } else if (response.data && Array.isArray(response.data)) {
+         setCategories(response.data);
+      } else {
+        // Fallback or error if structure doesn't match
+        setCategories((response as any) || []);
       }
     } catch (err) {
-      console.error('Failed to load properties:', err);
-      setError('Failed to load properties. Please try again.');
+      console.error('Failed to load categories:', err);
+      setError('Failed to load categories.');
     } finally {
       setLoading(false);
-      setRefreshing(false);
     }
   };
 
-  useEffect(() => {
-    loadProperties();
-  }, []);
-
-  const onRefresh = () => {
-    setRefreshing(true);
-    loadProperties();
+  const loadWorkouts = async (categoryId: number) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await apiService.getWorkouts(categoryId);
+      if (Array.isArray(response)) {
+        setWorkouts(response);
+      } else if (response.data && Array.isArray(response.data)) {
+        setWorkouts(response.data);
+      } else {
+         setWorkouts((response as any) || []);
+      }
+    } catch (err) {
+      console.error('Failed to load workouts:', err);
+      setError('Failed to load workouts.');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const renderPropertyCard = (property: Property) => {
-    const primaryPhoto = property.photos?.find(photo => photo.is_primary) || property.photos?.[0];
-    
+  const handleBack = () => {
+    if (selectedWorkout) {
+      setSelectedWorkout(null);
+    } else if (selectedCategory) {
+      setSelectedCategory(null);
+      setWorkouts([]);
+    }
+  };
+
+  if (loading && !categories.length && !selectedCategory) {
     return (
-      <TouchableOpacity key={property.property_id} style={styles.propertyCard}>
-        {primaryPhoto ? (
-          <Image
-            source={{ uri: primaryPhoto.photo_url }}
-            style={styles.propertyImage}
-            contentFit="cover"
-          />
-        ) : (
-          <ThemedView style={styles.propertyImagePlaceholder}>
-            <IconSymbol name="house.fill" size={40} color="#808080" />
-          </ThemedView>
-        )}
-        
-        <ThemedView style={styles.propertyInfo}>
-          <ThemedText type="defaultSemiBold" style={styles.propertyTitle}>
-            {property.title}
-          </ThemedText>
-          <ThemedText style={styles.propertyLocation}>
-            {property.city}, {property.country}
-          </ThemedText>
-          <ThemedText style={styles.propertyDetails}>
-            {property.guest_capacity} guests · {property.bedroom_count} bedrooms · {property.bathroom_count} bathrooms
-          </ThemedText>
-          <ThemedView style={styles.propertyFooter}>
-            <ThemedText type="defaultSemiBold" style={styles.propertyPrice}>
-              ${property.price_per_night} per night
-            </ThemedText>
-            {property.rating && (
-              <ThemedView style={styles.ratingContainer}>
-                <IconSymbol name="star.fill" size={14} color="#FFD700" />
-                <ThemedText style={styles.ratingText}>
-                  {property.rating.toFixed(1)} ({property.review_count || 0})
-                </ThemedText>
-              </ThemedView>
-            )}
-          </ThemedView>
-        </ThemedView>
-      </TouchableOpacity>
+      <ThemedView style={styles.centerContainer}>
+        <ActivityIndicator size="large" color="#007AFF" />
+      </ThemedView>
     );
+  }
+
+  // Header Image handling
+  const getHeaderImage = () => {
+    if (selectedWorkout) return { uri: selectedWorkout.image_url };
+    if (selectedCategory) return { uri: selectedCategory.image_url };
+    return null; // Default handled in ParallaxScrollView or custom
   };
 
-  if (loading) {
+  // RENDER: Workout Details
+  if (selectedWorkout) {
     return (
       <ParallaxScrollView
-        headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
+        headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
         headerImage={
-          <IconSymbol
-            size={310}
-            color="#808080"
-            name="magnifyingglass"
-            style={styles.headerImage}
+          <Image
+            source={{ uri: selectedWorkout.image_url }}
+            style={styles.headerImageFull}
+            contentFit="cover"
           />
         }>
-        <ThemedView style={styles.titleContainer}>
-          <ThemedText
-            type="title"
-            style={{
-              fontFamily: Fonts.rounded,
-            }}>
-            Explore Properties
-          </ThemedText>
-        </ThemedView>
-        <ThemedView style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#007AFF" />
-          <ThemedText style={styles.loadingText}>Loading properties...</ThemedText>
+        <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+          <IconSymbol name="arrow.left" size={24} color="#007AFF" />
+          <ThemedText style={styles.backButtonText}>Back to Workouts</ThemedText>
+        </TouchableOpacity>
+
+        <ThemedView style={styles.contentContainer}>
+          <ThemedText type="title">{selectedWorkout.title}</ThemedText>
+          
+          <View style={styles.metaContainer}>
+            <View style={styles.metaItem}>
+              <IconSymbol name="clock" size={20} color="#666" />
+              <ThemedText style={styles.metaText}>{selectedWorkout.duration_minutes} min</ThemedText>
+            </View>
+            <View style={styles.metaItem}>
+              <IconSymbol name="flame" size={20} color="#FF5722" />
+              <ThemedText style={styles.metaText}>{selectedWorkout.difficulty_level}</ThemedText>
+            </View>
+          </View>
+
+          <ThemedText style={styles.description}>{selectedWorkout.description}</ThemedText>
+
+          <TouchableOpacity style={styles.startWorkoutButton}>
+            <ThemedText style={styles.startWorkoutText}>Start Workout</ThemedText>
+          </TouchableOpacity>
         </ThemedView>
       </ParallaxScrollView>
     );
   }
 
+  // RENDER: Workouts List (Category Selected)
+  if (selectedCategory) {
+    return (
+      <ParallaxScrollView
+        headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
+        headerImage={
+          <Image
+            source={{ uri: selectedCategory.image_url }}
+            style={styles.headerImageFull}
+            contentFit="cover"
+          />
+        }>
+        <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+          <IconSymbol name="arrow.left" size={24} color="#007AFF" />
+          <ThemedText style={styles.backButtonText}>All Categories</ThemedText>
+        </TouchableOpacity>
+
+        <ThemedView style={styles.titleContainer}>
+          <ThemedText type="title">{selectedCategory.name}</ThemedText>
+          <ThemedText style={styles.subtitle}>{selectedCategory.description}</ThemedText>
+        </ThemedView>
+
+        {loading ? (
+           <ActivityIndicator size="large" color="#007AFF" style={{ marginTop: 20 }} />
+        ) : (
+          <ThemedView style={styles.listContainer}>
+            {workouts.map((workout) => (
+              <TouchableOpacity 
+                key={workout.id} 
+                style={styles.card}
+                onPress={() => setSelectedWorkout(workout)}
+              >
+                <Image source={{ uri: workout.image_url }} style={styles.cardImage} />
+                <View style={styles.cardContent}>
+                  <ThemedText type="defaultSemiBold">{workout.title}</ThemedText>
+                  <View style={styles.cardMeta}>
+                     <ThemedText style={styles.cardMetaText}>{workout.duration_minutes} min • {workout.difficulty_level}</ThemedText>
+                  </View>
+                </View>
+                <IconSymbol name="chevron.right" size={24} color="#C7C7CC" />
+              </TouchableOpacity>
+            ))}
+            {workouts.length === 0 && (
+              <ThemedText style={styles.emptyText}>No workouts found in this category.</ThemedText>
+            )}
+          </ThemedView>
+        )}
+      </ParallaxScrollView>
+    );
+  }
+
+  // RENDER: Categories List
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
@@ -148,61 +213,55 @@ export default function TabTwoScreen() {
         <IconSymbol
           size={310}
           color="#808080"
-          name="magnifyingglass"
-          style={styles.headerImage}
+          name="figure.run"
+          style={styles.headerIcon}
         />
-      }
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }>
       <ThemedView style={styles.titleContainer}>
-        <ThemedText
-          type="title"
-          style={{
-            fontFamily: Fonts.rounded,
-          }}>
-          Explore Properties
-        </ThemedText>
-        <ThemedText style={styles.subtitle}>
-          Discover amazing places to stay
-        </ThemedText>
+        <ThemedText type="title">Workout Library</ThemedText>
+        <ThemedText style={styles.subtitle}>Choose a category to start training</ThemedText>
       </ThemedView>
 
-      {error && (
-        <ThemedView style={styles.errorContainer}>
-          <ThemedText style={styles.errorText}>{error}</ThemedText>
-          <TouchableOpacity style={styles.retryButton} onPress={loadProperties}>
-            <ThemedText style={styles.retryButtonText}>Retry</ThemedText>
+      <ThemedView style={styles.gridContainer}>
+        {categories.map((category) => (
+          <TouchableOpacity 
+            key={category.id} 
+            style={styles.categoryCard}
+            onPress={() => setSelectedCategory(category)}
+          >
+            <ImageBackground 
+              source={{ uri: category.image_url }} 
+              style={styles.categoryBackground}
+              imageStyle={{ borderRadius: 12 }}
+            >
+              <View style={styles.categoryOverlay}>
+                <ThemedText type="title" style={styles.categoryTitle}>{category.name}</ThemedText>
+              </View>
+            </ImageBackground>
           </TouchableOpacity>
-        </ThemedView>
-      )}
-
-      {properties.length === 0 && !error ? (
-        <ThemedView style={styles.emptyContainer}>
-          <IconSymbol name="house" size={60} color="#808080" />
-          <ThemedText style={styles.emptyText}>
-            No properties found. Check back later!
-          </ThemedText>
-        </ThemedView>
-      ) : (
-        <ThemedView style={styles.propertiesContainer}>
-          {properties.map(renderPropertyCard)}
-        </ThemedView>
-      )}
+        ))}
+      </ThemedView>
     </ParallaxScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  headerImage: {
+  centerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  headerIcon: {
     color: '#808080',
     bottom: -90,
     left: -35,
     position: 'absolute',
   },
+  headerImageFull: {
+    width: '100%',
+    height: '100%',
+  },
   titleContainer: {
-    flexDirection: 'column',
-    gap: 8,
     marginBottom: 20,
   },
   subtitle: {
@@ -210,107 +269,107 @@ const styles = StyleSheet.create({
     color: '#666',
     marginTop: 4,
   },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 40,
+  contentContainer: {
+    padding: 0,
   },
-  loadingText: {
-    marginTop: 16,
-    fontSize: 16,
-    color: '#666',
-  },
-  errorContainer: {
-    backgroundColor: '#FFE6E6',
-    padding: 16,
-    borderRadius: 8,
-    marginBottom: 20,
-  },
-  errorText: {
-    color: '#D32F2F',
-    marginBottom: 8,
-  },
-  retryButton: {
-    backgroundColor: '#D32F2F',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 4,
-    alignSelf: 'flex-start',
-  },
-  retryButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 60,
-  },
-  emptyText: {
-    marginTop: 16,
-    fontSize: 16,
-    color: '#666',
-    textAlign: 'center',
-  },
-  propertiesContainer: {
+  gridContainer: {
     gap: 16,
   },
-  propertyCard: {
-    backgroundColor: 'white',
+  listContainer: {
+    gap: 12,
+  },
+  categoryCard: {
+    height: 160,
     borderRadius: 12,
-    overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  propertyImage: {
-    width: '100%',
-    height: 200,
-  },
-  propertyImagePlaceholder: {
-    width: '100%',
-    height: 200,
-    backgroundColor: '#F5F5F5',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  propertyInfo: {
-    padding: 16,
-  },
-  propertyTitle: {
-    fontSize: 18,
-    marginBottom: 4,
-  },
-  propertyLocation: {
-    fontSize: 14,
-    color: '#666',
     marginBottom: 8,
   },
-  propertyDetails: {
+  categoryBackground: {
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
+  categoryOverlay: {
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    padding: 16,
+    borderBottomLeftRadius: 12,
+    borderBottomRightRadius: 12,
+  },
+  categoryTitle: {
+    color: 'white',
+  },
+  card: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff', // Should use themed background in real app
+    padding: 12,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  cardImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 8,
+    marginRight: 12,
+  },
+  cardContent: {
+    flex: 1,
+  },
+  cardMeta: {
+    marginTop: 4,
+  },
+  cardMetaText: {
     fontSize: 14,
     color: '#666',
-    marginBottom: 12,
   },
-  propertyFooter: {
+  backButton: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: 16,
+    marginTop: 8,
   },
-  propertyPrice: {
-    fontSize: 16,
+  backButtonText: {
     color: '#007AFF',
+    fontSize: 16,
+    marginLeft: 4,
+    fontWeight: '600',
   },
-  ratingContainer: {
+  metaContainer: {
+    flexDirection: 'row',
+    gap: 24,
+    marginVertical: 16,
+  },
+  metaItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: 8,
   },
-  ratingText: {
-    fontSize: 14,
+  metaText: {
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  description: {
+    fontSize: 16,
+    lineHeight: 24,
+    color: '#444',
+    marginBottom: 24,
+  },
+  startWorkoutButton: {
+    backgroundColor: '#007AFF',
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  startWorkoutText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  emptyText: {
+    textAlign: 'center',
     color: '#666',
-  },
+    marginTop: 20,
+  }
 });

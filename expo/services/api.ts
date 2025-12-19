@@ -220,6 +220,16 @@ class ApiService {
       body: JSON.stringify(updates),
     });
   }
+
+  // Workouts
+  async getWorkoutCategories() {
+    return this.request('/api/workout-categories');
+  }
+
+  async getWorkouts(categoryId?: number) {
+    const query = categoryId ? `?category_id=${categoryId}` : '';
+    return this.request(`/api/workouts${query}`);
+  }
 }
 
 export const apiService = new ApiService();

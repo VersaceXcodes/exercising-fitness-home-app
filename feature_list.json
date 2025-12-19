@@ -1,0 +1,19 @@
+[
+  {
+    "id": "workout-library-browse",
+    "category": "functional",
+    "description": "Display categorized list of available home workout routines",
+    "steps": [
+      "Access workout library from main menu",
+      "View workout categories (strength, cardio, yoga, etc.)",
+      "Browse workouts within each category",
+      "View workout preview with duration and difficulty",
+      "Select a workout to view details"
+    ],
+    "priority": 1,
+    "passes": true,
+    "selected": true,
+    "order": 3
+  }
+]
+
