@@ -2,7 +2,7 @@ import Constants from 'expo-constants';
 
 const API_BASE_URL = Constants.expoConfig?.extra?.apiUrl || 
   process.env.EXPO_PUBLIC_API_URL || 
-  'https://123templatetest-api.launchpulse.ai';
+  'http://localhost:3000';
 
 interface ApiResponse<T> {
   success?: boolean;
