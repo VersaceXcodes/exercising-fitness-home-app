@@ -5,40 +5,65 @@ The Expo React Native app failed to build due to a Metro bundler error. You need
 ## Error Type: Expo/Metro build error: Metro error
 
 ## Metro Bundler Output:
-ected versions of the packages.
-Waiting on http://localhost:5173
-Logs for your project will appear below.
+39m
+[31m[1m>[22m[39m[90m 3 |[39m [36mimport[39m [32m"./publicGlobals.js"[39m[33m;[39m
+ [90m   |[39m         [31m[1m^[22m[39m
+ [90m 4 |[39m [36mimport[39m { init } [36mfrom[39m [32m"./initializers.js"[39m[33m;[39m
+ [90m 5 |[39m [36mimport[39m { bundleModeInit } [36mfrom[39m [32m"./workletRuntimeEntry.js"[39m[33m;[39m
+ [90m 6 |[39m init()[33m;[39m[0m
+
+Import stack:
+
+ node_modules/react-native-worklets/lib/module/index.js
+ | import "./publicGlobals.js"
+
+ node_modules/react-native-reanimated/lib/module/initializers.js
+ | import "react-native-worklets"
+
+ node_modules/react-native-reanimated/lib/module/index.js
+ | import "./initializers"
+
+ components/parallax-scroll-view.tsx
+ | import "react-native-reanimated"
+
+ app/(tabs)/explore.tsx
+ | import "@/components/parallax-scroll-view"
+
+ app (require.context)
+
+
+Import stack:
+
+ node_modules/react-native-worklets/lib/module/index.js
+ | import "./publicGlobals.js"
+
+ node_modules/react-native-reanimated/lib/module/initializers.js
+ | import "react-native-worklets"
+
+ node_modules/react-native-reanimated/lib/module/index.js
+ | import "./initializers"
+
+ components/parallax-scroll-view.tsx
+ | import "react-native-reanimated"
+
+ app/(tabs)/explore.tsx
+ | import "@/components/parallax-scroll-view"
+
+ app (require.context)
+
+
+Call Stack
+  <unknown> (node_modules/react-native-worklets/lib/module/index.js:0)
+Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 90.6% ( 987/1037)
 Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-λ node_modules/expo-router/node/render.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-λ Bundling failed 420ms node_modules/expo-router/node/render.js (1 module)
 Error: Premature close
     at onclose (node:internal/streams/end-of-stream:159:30)
     at processTicksAndRejections (node:internal/process/task_queues:77:11)
-Web Bundling failed 428ms node_modules/expo-router/entry.js (1 module)
-
-Metro error: node_modules/expo-router/node/render.js: [BABEL]: Cannot find module 'react-native-worklets/plugin'
-Require stack:
-- /app/expo/node_modules/react-native-reanimated/plugin/index.js
-- /app/expo/node_modules/@babel/core/lib/config/files/module-types.js
-- /app/expo/node_modules/@babel/core/lib/config/files/configuration.js
-- /app/expo/node_modules/@babel/core/lib/config/files/index.js
-- /app/expo/node_modules/@babel/core/lib/index.js
-- /app/expo/node_modules/expo/node_modules/@expo/metro-config/build/transform-worker/metro-transform-worker.js
-- /app/expo/node_modules/expo/node_modules/@expo/metro-config/build/transform-worker/transform-worker.js
-- /app/expo/node_modules/expo/node_modules/metro/src/DeltaBundler/Worker.flow.js
-- /app/expo/node_modules/expo/node_modules/metro/src/DeltaBundler/Worker.js
-- /app/expo/node_modules/jest-worker/build/workers/processChild.js (While processing: /app/expo/node_modules/react-native-reanimated/plugin/index.js)
-
-Call Stack
-  Module._resolveFilename (node:internal/modules/cjs/loader)
-  Module._load (node:internal/modules/cjs/loader)
-  Module.require (node:internal/modules/cjs/loader)
-  require (node:internal/modules/helpers)
-  Module._compile (node:internal/modules/cjs/loader)
-  Module._extensions..js (node:internal/modules/cjs/loader)
-  Module.load (node:internal/modules/cjs/loader)
-  Module._load (node:internal/modules/cjs/loader)
-  Module.require (node:internal/modules/cjs/loader)
+Error: Premature close
+    at onclose (node:internal/streams/end-of-stream:159:30)
+    at processTicksAndRejections (node:internal/process/task_queues:77:11)
+Web Bundling failed 4626ms node_modules/expo-router/entry.js (1 module)
+Web Bundling failed 10009ms node_modules/expo-router/entry.js (1107 modules)
 
 
 ## Working Directory: /app/expo
