@@ -5,27 +5,65 @@ The Expo React Native app failed to build due to a Metro bundler error. You need
 ## Error Type: Expo/Metro build error: Metro error
 
 ## Metro Bundler Output:
-po-router/node/render.js ▓▓▓▓▓▓░░░░░░░░░░ 42.8% (297/454)
-λ Bundled 2361ms node_modules/expo-router/node/render.js (1068 modules)
+[90m 2 |[39m
+[31m[1m>[22m[39m[90m 3 |[39m [36mimport[39m { init } [36mfrom[39m [32m'./initializers/initializers'[39m[33m;[39m
+ [90m   |[39m                       [31m[1m^[22m[39m
+ [90m 4 |[39m [36mimport[39m { bundleModeInit } [36mfrom[39m [32m'./initializers/workletRuntimeEntry'[39m[33m;[39m
+ [90m 5 |[39m init()[33m;[39m
+ [90m 6 |[39m[0m
 
-Metro error: [Reanimated] Invalid version of `react-native-worklets`: "0.3.0". Expected the version to be in inclusive range "0.5.x, 0.6.x, 0.7.x". Please install a compatible version of `react-native-worklets`.
+Import stack:
 
-  ReanimatedError: [Reanimated] Invalid version of `react-native-worklets`: "0.3.0". Expected the version to be in inclusive range "0.5.x, 0.6.x, 0.7.x". Please install a compatible version of `react-native-worklets`.
-    at new ReanimatedErrorConstructor (/app/expo/node_modules/react-native-reanimated/lib/module/common/errors.js:9:25)
-    at assertWorkletsVersion (/app/expo/node_modules/react-native-reanimated/lib/module/platform-specific/workletsVersion.js:10:11)
-    at new JSReanimated (/app/expo/node_modules/react-native-reanimated/lib/module/ReanimatedModule/js-reanimated/JSReanimated.js:22:28)
-    at createJSReanimatedModule (/app/expo/node_modules/react-native-reanimated/lib/module/ReanimatedModule/js-reanimated/JSReanimated.js:8:10)
-    at factory (/app/expo/node_modules/react-native-reanimated/lib/module/ReanimatedModule/index.web.js:5:57)
-    at loadModuleImplementation (/app/expo/node_modules/@expo/cli/build/metro-require/require.js:248:36)
-    at guardedLoadModule (/app/expo/node_modules/@expo/cli/build/metro-require/require.js:163:16)
-    at require (/app/expo/node_modules/@expo/cli/build/metro-require/require.js:74:75)
-    at factory (/app/expo/node_modules/react-native-reanimated/lib/module/featureFlags/index.js:4:1)
-    at loadModuleImplementation (/app/expo/node_modules/@expo/cli/build/metro-require/require.js:248:36)
-Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.9% (1129/1129)
+ node_modules/react-native-worklets/lib/module/index.js
+ | import "./initializers/initializers"
+
+ node_modules/react-native-reanimated/lib/module/initializers.js
+ | import "react-native-worklets"
+
+ node_modules/react-native-reanimated/lib/module/index.js
+ | import "./initializers"
+
+ components/parallax-scroll-view.tsx
+ | import "react-native-reanimated"
+
+ app/(tabs)/explore.tsx
+ | import "@/components/parallax-scroll-view"
+
+ app (require.context)
+
+
+Import stack:
+
+ node_modules/react-native-worklets/lib/module/index.js
+ | import "./initializers/initializers"
+
+ node_modules/react-native-reanimated/lib/module/initializers.js
+ | import "react-native-worklets"
+
+ node_modules/react-native-reanimated/lib/module/index.js
+ | import "./initializers"
+
+ components/parallax-scroll-view.tsx
+ | import "react-native-reanimated"
+
+ app/(tabs)/explore.tsx
+ | import "@/components/parallax-scroll-view"
+
+ app (require.context)
+
+
+Call Stack
+  <unknown> (node_modules/react-native-worklets/lib/module/index.js:0)
+Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 90.3% (879/925)
+Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
 Error: Premature close
     at onclose (node:internal/streams/end-of-stream:159:30)
     at processTicksAndRejections (node:internal/process/task_queues:77:11)
-Web Bundled 3653ms node_modules/expo-router/entry.js (1129 modules)
+Error: Premature close
+    at onclose (node:internal/streams/end-of-stream:159:30)
+    at processTicksAndRejections (node:internal/process/task_queues:77:11)
+Web Bundling failed 4408ms node_modules/expo-router/entry.js (1 module)
+Web Bundling failed 9822ms node_modules/expo-router/entry.js (1112 modules)
 
 
 ## Working Directory: /app/expo
