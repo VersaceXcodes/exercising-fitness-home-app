@@ -2,31 +2,43 @@ EXPO/METRO BUNDLER ERROR - Immediate Fix Required
 
 The Expo React Native app failed to build due to a Metro bundler error. You need to fix this NOW.
 
-## Error Type: Expo/Metro build error: Cannot find module
+## Error Type: Expo/Metro build error: Metro error
 
 ## Metro Bundler Output:
-env: load .env.local .env
-env: export VITE_API_BASE_URL API_BASE_URL FRONTEND_URL BACKEND_URL TUNNEL_ID PROJECT_SLUG TUNNEL_DOMAIN SINGLE_SERVER_MODE EXPO_PUBLIC_API_URL EXPO_PUBLIC_BACKEND_URL EXPO_PUBLIC_FRONTEND_URL
-/app/expo/node_modules/expo/node_modules/@expo/cli/build/src/utils/errors.js:130
-    throw error;
-    ^
+ected versions of the packages.
+Waiting on http://localhost:5173
+Logs for your project will appear below.
+Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+λ node_modules/expo-router/node/render.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+λ Bundling failed 420ms node_modules/expo-router/node/render.js (1 module)
+Error: Premature close
+    at onclose (node:internal/streams/end-of-stream:159:30)
+    at processTicksAndRejections (node:internal/process/task_queues:77:11)
+Web Bundling failed 428ms node_modules/expo-router/entry.js (1 module)
 
-Error: Cannot find module '/app/expo/node_modules/minimatch/dist/commonjs/index.js'
-    at createEsmNotFoundErr (node:internal/modules/cjs/loader:1244:15)
-    at finalizeEsmResolution (node:internal/modules/cjs/loader:1232:15)
-    at resolveExports (node:internal/modules/cjs/loader:638:14)
-    at Module._findPath (node:internal/modules/cjs/loader:711:31)
-    at Module._resolveFilename (node:internal/modules/cjs/loader:1193:27)
-    at Module._load (node:internal/modules/cjs/loader:1038:27)
-    at Module.require (node:internal/modules/cjs/loader:1289:19)
-    at require (node:internal/modules/helpers:182:18)
-    at Object.<anonymous> (/app/expo/node_modules/expo/node_modules/glob/dist/commonjs/index.js:9:21)
-    at Module._compile (node:internal/modules/cjs/loader:1521:14) {
-  code: 'MODULE_NOT_FOUND',
-  path: '/app/expo/node_modules/minimatch/package.json'
-}
+Metro error: node_modules/expo-router/node/render.js: [BABEL]: Cannot find module 'react-native-worklets/plugin'
+Require stack:
+- /app/expo/node_modules/react-native-reanimated/plugin/index.js
+- /app/expo/node_modules/@babel/core/lib/config/files/module-types.js
+- /app/expo/node_modules/@babel/core/lib/config/files/configuration.js
+- /app/expo/node_modules/@babel/core/lib/config/files/index.js
+- /app/expo/node_modules/@babel/core/lib/index.js
+- /app/expo/node_modules/expo/node_modules/@expo/metro-config/build/transform-worker/metro-transform-worker.js
+- /app/expo/node_modules/expo/node_modules/@expo/metro-config/build/transform-worker/transform-worker.js
+- /app/expo/node_modules/expo/node_modules/metro/src/DeltaBundler/Worker.flow.js
+- /app/expo/node_modules/expo/node_modules/metro/src/DeltaBundler/Worker.js
+- /app/expo/node_modules/jest-worker/build/workers/processChild.js (While processing: /app/expo/node_modules/react-native-reanimated/plugin/index.js)
 
-Node.js v20.19.5
+Call Stack
+  Module._resolveFilename (node:internal/modules/cjs/loader)
+  Module._load (node:internal/modules/cjs/loader)
+  Module.require (node:internal/modules/cjs/loader)
+  require (node:internal/modules/helpers)
+  Module._compile (node:internal/modules/cjs/loader)
+  Module._extensions..js (node:internal/modules/cjs/loader)
+  Module.load (node:internal/modules/cjs/loader)
+  Module._load (node:internal/modules/cjs/loader)
+  Module.require (node:internal/modules/cjs/loader)
 
 
 ## Working Directory: /app/expo
