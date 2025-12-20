@@ -110,6 +110,68 @@ export default function HomeScreen() {
         </View>
       </View>
 
+      {/* Workout Guides Section */}
+      <View style={styles.section}>
+        <ThemedText type="subtitle" style={styles.sectionTitle}>
+          Workout Guides
+        </ThemedText>
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.guidesContainer}
+        >
+          <TouchableOpacity style={[styles.guideCard, { backgroundColor: '#E3F2FD' }]}>
+            <View style={styles.guideIconContainer}>
+              <IconSymbol name="figure.walk" size={32} color="#2196F3" />
+            </View>
+            <ThemedText style={styles.guideTitle}>Beginner's Guide</ThemedText>
+            <ThemedText style={styles.guideDescription}>
+              Start your fitness journey with proper form and technique
+            </ThemedText>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={[styles.guideCard, { backgroundColor: '#F3E5F5' }]}>
+            <View style={styles.guideIconContainer}>
+              <IconSymbol name="heart.fill" size={32} color="#9C27B0" />
+            </View>
+            <ThemedText style={styles.guideTitle}>Cardio Tips</ThemedText>
+            <ThemedText style={styles.guideDescription}>
+              Maximize your cardio workouts for better endurance
+            </ThemedText>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={[styles.guideCard, { backgroundColor: '#E8F5E9' }]}>
+            <View style={styles.guideIconContainer}>
+              <IconSymbol name="leaf.fill" size={32} color="#4CAF50" />
+            </View>
+            <ThemedText style={styles.guideTitle}>Nutrition Basics</ThemedText>
+            <ThemedText style={styles.guideDescription}>
+              Fuel your body right for optimal performance
+            </ThemedText>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={[styles.guideCard, { backgroundColor: '#FFF3E0' }]}>
+            <View style={styles.guideIconContainer}>
+              <IconSymbol name="moon.zzz.fill" size={32} color="#FF9800" />
+            </View>
+            <ThemedText style={styles.guideTitle}>Recovery Tips</ThemedText>
+            <ThemedText style={styles.guideDescription}>
+              Rest and recover properly to prevent injuries
+            </ThemedText>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={[styles.guideCard, { backgroundColor: '#FFEBEE' }]}>
+            <View style={styles.guideIconContainer}>
+              <IconSymbol name="figure.strengthtraining.traditional" size={32} color="#F44336" />
+            </View>
+            <ThemedText style={styles.guideTitle}>Strength Training</ThemedText>
+            <ThemedText style={styles.guideDescription}>
+              Build muscle effectively with proper techniques
+            </ThemedText>
+          </TouchableOpacity>
+        </ScrollView>
+      </View>
+
       {/* Featured Workout */}
       {featuredWorkout && (
         <View style={styles.section}>
@@ -263,6 +325,35 @@ const styles = StyleSheet.create({
   section: {
     paddingHorizontal: 20,
     marginBottom: 24,
+  },
+  guidesContainer: {
+    paddingRight: 20,
+    gap: 12,
+  },
+  guideCard: {
+    width: 200,
+    padding: 16,
+    borderRadius: 16,
+    marginRight: 12,
+  },
+  guideIconContainer: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  guideTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    marginBottom: 6,
+  },
+  guideDescription: {
+    fontSize: 13,
+    opacity: 0.7,
+    lineHeight: 18,
   },
   sectionHeader: {
     flexDirection: 'row',

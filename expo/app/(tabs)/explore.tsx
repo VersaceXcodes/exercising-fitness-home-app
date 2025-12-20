@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, View, ImageBackground } from 'react-native';
 import { Image } from 'expo-image';
 
-import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
@@ -116,150 +115,161 @@ export default function WorkoutsScreen() {
   // RENDER: Workout Details
   if (selectedWorkout) {
     return (
-      <ParallaxScrollView
-        headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-        headerImage={
+      <ThemedView style={styles.container}>
+        <ScrollView>
           <Image
             source={{ uri: selectedWorkout.image_url }}
-            style={styles.headerImageFull}
+            style={styles.headerImage}
             contentFit="cover"
           />
-        }>
-        <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-          <IconSymbol name="arrow.left" size={24} color="#007AFF" />
-          <ThemedText style={styles.backButtonText}>Back to Workouts</ThemedText>
-        </TouchableOpacity>
+          <ThemedView style={styles.content}>
+            <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+              <IconSymbol name="arrow.left" size={24} color="#007AFF" />
+              <ThemedText style={styles.backButtonText}>Back to Workouts</ThemedText>
+            </TouchableOpacity>
 
-        <ThemedView style={styles.contentContainer}>
-          <ThemedText type="title">{selectedWorkout.title}</ThemedText>
-          
-          <View style={styles.metaContainer}>
-            <View style={styles.metaItem}>
-              <IconSymbol name="clock" size={20} color="#666" />
-              <ThemedText style={styles.metaText}>{selectedWorkout.duration_minutes} min</ThemedText>
-            </View>
-            <View style={styles.metaItem}>
-              <IconSymbol name="flame" size={20} color="#FF5722" />
-              <ThemedText style={styles.metaText}>{selectedWorkout.difficulty_level}</ThemedText>
-            </View>
-          </View>
+            <ThemedView style={styles.contentContainer}>
+              <ThemedText type="title">{selectedWorkout.title}</ThemedText>
+              
+              <View style={styles.metaContainer}>
+                <View style={styles.metaItem}>
+                  <IconSymbol name="clock" size={20} color="#666" />
+                  <ThemedText style={styles.metaText}>{selectedWorkout.duration_minutes} min</ThemedText>
+                </View>
+                <View style={styles.metaItem}>
+                  <IconSymbol name="flame" size={20} color="#FF5722" />
+                  <ThemedText style={styles.metaText}>{selectedWorkout.difficulty_level}</ThemedText>
+                </View>
+              </View>
 
-          <ThemedText style={styles.description}>{selectedWorkout.description}</ThemedText>
+              <ThemedText style={styles.description}>{selectedWorkout.description}</ThemedText>
 
-          <TouchableOpacity style={styles.startWorkoutButton}>
-            <ThemedText style={styles.startWorkoutText}>Start Workout</ThemedText>
-          </TouchableOpacity>
-        </ThemedView>
-      </ParallaxScrollView>
+              <TouchableOpacity style={styles.startWorkoutButton}>
+                <ThemedText style={styles.startWorkoutText}>Start Workout</ThemedText>
+              </TouchableOpacity>
+            </ThemedView>
+          </ThemedView>
+        </ScrollView>
+      </ThemedView>
     );
   }
 
   // RENDER: Workouts List (Category Selected)
   if (selectedCategory) {
     return (
-      <ParallaxScrollView
-        headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-        headerImage={
+      <ThemedView style={styles.container}>
+        <ScrollView>
           <Image
             source={{ uri: selectedCategory.image_url }}
-            style={styles.headerImageFull}
+            style={styles.headerImage}
             contentFit="cover"
           />
-        }>
-        <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-          <IconSymbol name="arrow.left" size={24} color="#007AFF" />
-          <ThemedText style={styles.backButtonText}>All Categories</ThemedText>
-        </TouchableOpacity>
+          <ThemedView style={styles.content}>
+            <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+              <IconSymbol name="arrow.left" size={24} color="#007AFF" />
+              <ThemedText style={styles.backButtonText}>All Categories</ThemedText>
+            </TouchableOpacity>
 
-        <ThemedView style={styles.titleContainer}>
-          <ThemedText type="title">{selectedCategory.name}</ThemedText>
-          <ThemedText style={styles.subtitle}>{selectedCategory.description}</ThemedText>
-        </ThemedView>
+            <ThemedView style={styles.titleContainer}>
+              <ThemedText type="title">{selectedCategory.name}</ThemedText>
+              <ThemedText style={styles.subtitle}>{selectedCategory.description}</ThemedText>
+            </ThemedView>
 
-        {loading ? (
-           <ActivityIndicator size="large" color="#007AFF" style={{ marginTop: 20 }} />
-        ) : (
-          <ThemedView style={styles.listContainer}>
-            {workouts.map((workout) => (
-              <TouchableOpacity 
-                key={workout.id} 
-                style={styles.card}
-                onPress={() => setSelectedWorkout(workout)}
-              >
-                <Image source={{ uri: workout.image_url }} style={styles.cardImage} />
-                <View style={styles.cardContent}>
-                  <ThemedText type="defaultSemiBold">{workout.title}</ThemedText>
-                  <View style={styles.cardMeta}>
-                     <ThemedText style={styles.cardMetaText}>{workout.duration_minutes} min • {workout.difficulty_level}</ThemedText>
-                  </View>
-                </View>
-                <IconSymbol name="chevron.right" size={24} color="#C7C7CC" />
-              </TouchableOpacity>
-            ))}
-            {workouts.length === 0 && (
-              <ThemedText style={styles.emptyText}>No workouts found in this category.</ThemedText>
+            {loading ? (
+               <ActivityIndicator size="large" color="#007AFF" style={{ marginTop: 20 }} />
+            ) : (
+              <ThemedView style={styles.listContainer}>
+                {workouts.map((workout) => (
+                  <TouchableOpacity 
+                    key={workout.id} 
+                    style={styles.card}
+                    onPress={() => setSelectedWorkout(workout)}
+                  >
+                    <Image source={{ uri: workout.image_url }} style={styles.cardImage} />
+                    <View style={styles.cardContent}>
+                      <ThemedText type="defaultSemiBold">{workout.title}</ThemedText>
+                      <View style={styles.cardMeta}>
+                         <ThemedText style={styles.cardMetaText}>{workout.duration_minutes} min • {workout.difficulty_level}</ThemedText>
+                      </View>
+                    </View>
+                    <IconSymbol name="chevron.right" size={24} color="#C7C7CC" />
+                  </TouchableOpacity>
+                ))}
+                {workouts.length === 0 && (
+                  <ThemedText style={styles.emptyText}>No workouts found in this category.</ThemedText>
+                )}
+              </ThemedView>
             )}
           </ThemedView>
-        )}
-      </ParallaxScrollView>
+        </ScrollView>
+      </ThemedView>
     );
   }
 
   // RENDER: Categories List
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="figure.run"
-          style={styles.headerIcon}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Workout Library</ThemedText>
-        <ThemedText style={styles.subtitle}>Choose a category to start training</ThemedText>
-      </ThemedView>
+    <ThemedView style={styles.container}>
+      <ScrollView>
+        <View style={styles.headerIconContainer}>
+          <IconSymbol
+            size={200}
+            color="#808080"
+            name="figure.run"
+          />
+        </View>
+        <ThemedView style={styles.content}>
+          <ThemedView style={styles.titleContainer}>
+            <ThemedText type="title">Workout Library</ThemedText>
+            <ThemedText style={styles.subtitle}>Choose a category to start training</ThemedText>
+          </ThemedView>
 
-      <ThemedView style={styles.gridContainer}>
-        {categories.map((category) => (
-          <TouchableOpacity 
-            key={category.id} 
-            style={styles.categoryCard}
-            onPress={() => setSelectedCategory(category)}
-          >
-            <ImageBackground 
-              source={{ uri: category.image_url }} 
-              style={styles.categoryBackground}
-              imageStyle={{ borderRadius: 12 }}
-            >
-              <View style={styles.categoryOverlay}>
-                <ThemedText type="title" style={styles.categoryTitle}>{category.name}</ThemedText>
-              </View>
-            </ImageBackground>
-          </TouchableOpacity>
-        ))}
-      </ThemedView>
-    </ParallaxScrollView>
+          <ThemedView style={styles.gridContainer}>
+            {categories.map((category) => (
+              <TouchableOpacity 
+                key={category.id} 
+                style={styles.categoryCard}
+                onPress={() => setSelectedCategory(category)}
+              >
+                <ImageBackground 
+                  source={{ uri: category.image_url }} 
+                  style={styles.categoryBackground}
+                  imageStyle={{ borderRadius: 12 }}
+                >
+                  <View style={styles.categoryOverlay}>
+                    <ThemedText type="title" style={styles.categoryTitle}>{category.name}</ThemedText>
+                  </View>
+                </ImageBackground>
+              </TouchableOpacity>
+            ))}
+          </ThemedView>
+        </ThemedView>
+      </ScrollView>
+    </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   centerContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  headerIcon: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
-  },
-  headerImageFull: {
+  headerImage: {
     width: '100%',
-    height: '100%',
+    height: 250,
+  },
+  headerIconContainer: {
+    width: '100%',
+    height: 200,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#f0f0f0',
+  },
+  content: {
+    padding: 16,
   },
   titleContainer: {
     marginBottom: 20,
