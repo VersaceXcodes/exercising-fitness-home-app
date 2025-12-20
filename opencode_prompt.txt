@@ -1,34 +1,49 @@
-## BUILD FAILURE - Fix Required (Attempt 1/3)
+EXPO/METRO BUNDLER ERROR - Immediate Fix Required
 
-The Vite build process failed. Analyze the error output below and fix the issue.
+The Expo React Native app failed to build due to a Metro bundler error. You need to fix this NOW.
 
-## Build Error Output:
-```
-npm error Missing script: "build"
-npm error
-npm error To see a list of scripts, run:
-npm error   npm run
-npm error A complete log of this run can be found in: /root/.npm/_logs/2025-12-20T09_14_41_392Z-debug-0.log
+## Error Type: Expo/Metro build error: Cannot find module
 
-```
+## Metro Bundler Output:
+env: load .env.local .env
+env: export VITE_API_BASE_URL API_BASE_URL FRONTEND_URL BACKEND_URL TUNNEL_ID PROJECT_SLUG TUNNEL_DOMAIN SINGLE_SERVER_MODE EXPO_PUBLIC_API_URL EXPO_PUBLIC_BACKEND_URL EXPO_PUBLIC_FRONTEND_URL
+/app/expo/node_modules/expo/node_modules/@expo/cli/build/src/utils/errors.js:130
+    throw error;
+    ^
 
-## Build Directory: /app/vitereact
+Error: Cannot find module '/app/expo/node_modules/minimatch/dist/commonjs/index.js'
+    at createEsmNotFoundErr (node:internal/modules/cjs/loader:1244:15)
+    at finalizeEsmResolution (node:internal/modules/cjs/loader:1232:15)
+    at resolveExports (node:internal/modules/cjs/loader:638:14)
+    at Module._findPath (node:internal/modules/cjs/loader:711:31)
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1193:27)
+    at Module._load (node:internal/modules/cjs/loader:1038:27)
+    at Module.require (node:internal/modules/cjs/loader:1289:19)
+    at require (node:internal/modules/helpers:182:18)
+    at Object.<anonymous> (/app/expo/node_modules/expo/node_modules/glob/dist/commonjs/index.js:9:21)
+    at Module._compile (node:internal/modules/cjs/loader:1521:14) {
+  code: 'MODULE_NOT_FOUND',
+  path: '/app/expo/node_modules/minimatch/package.json'
+}
+
+Node.js v20.19.5
+
+
+## Working Directory: /app/expo
+
+## Common Issues to Check:
+1. **Package version conflicts** - Check package.json for incompatible versions (e.g., react-native-worklets, react-native-reanimated)
+2. **Missing dependencies** - Run npm install or add missing packages
+3. **Import errors** - Fix incorrect imports in .tsx/.ts/.js files
+4. **Syntax errors** - Fix TypeScript/JavaScript syntax issues
 
 ## Your Task:
-1. **Analyze the Error**: Read the error output carefully to understand what went wrong
-2. **Locate the Problem**: Find the file(s) mentioned in the error
-3. **Apply the Fix**: 
-   - Missing file/component? CREATE it with correct exports
-   - Wrong import path? FIX the import statement  
-   - Syntax error? FIX the syntax in the affected file
-   - Type error? FIX the TypeScript types
-   - Missing dependency? Check if it needs to be installed or if it's a local import issue
-4. **Verify**: After fixing, ensure all imports resolve correctly
+1. **Read the error carefully** - Identify what package or file is causing the issue
+2. **Check package.json** at /app/expo/package.json for version conflicts
+3. **Fix the version** - Update the problematic package to a compatible version
+4. **Or fix the code** - If it's a code error, fix the specific file
 
-## IMPORTANT:
-- The build CANNOT succeed until this error is fixed
-- If creating a missing component, ensure exports match what's being imported (default vs named)
-- If the error mentions a specific line number, check that line in the source file
-- Run `npx tsc --noEmit` after fixing to verify no TypeScript errors remain
-
-Fix this error so the build can succeed on retry.
+IMPORTANT: This is an EXPO/React Native app, NOT a backend. Focus on:
+- package.json dependency versions
+- React Native component code
+- Metro bundler configuration
