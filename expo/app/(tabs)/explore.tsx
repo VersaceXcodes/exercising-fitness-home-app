@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, View, ImageBackground } from 'react-native';
+import { useRouter } from 'expo-router';
 import { Image } from 'expo-image';
 
 import { ThemedText } from '@/components/themed-text';
@@ -25,6 +26,7 @@ interface Workout {
 }
 
 export default function WorkoutsScreen() {
+  const router = useRouter();
   const [categories, setCategories] = useState<Category[]>([]);
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   
@@ -144,7 +146,10 @@ export default function WorkoutsScreen() {
 
               <ThemedText style={styles.description}>{selectedWorkout.description}</ThemedText>
 
-              <TouchableOpacity style={styles.startWorkoutButton}>
+              <TouchableOpacity 
+                style={styles.startWorkoutButton}
+                onPress={() => router.push(`/workout/${selectedWorkout.id}`)}
+              >
                 <ThemedText style={styles.startWorkoutText}>Start Workout</ThemedText>
               </TouchableOpacity>
             </ThemedView>

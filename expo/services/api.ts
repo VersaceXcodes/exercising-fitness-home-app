@@ -226,9 +226,26 @@ class ApiService {
     return this.request('/api/workout-categories');
   }
 
+
   async getWorkouts(categoryId?: number) {
     const query = categoryId ? `?category_id=${categoryId}` : '';
     return this.request(`/api/workouts${query}`);
+  }
+
+  async getWorkoutExercises(workoutId: number) {
+    return this.request(`/api/workouts/${workoutId}/exercises`);
+  }
+
+  async logWorkout(logData: {
+    workout_id: number;
+    duration_seconds: number;
+    exercises: any[];
+    user_id?: number;
+  }) {
+    return this.request('/api/workout-logs', {
+      method: 'POST',
+      body: JSON.stringify(logData),
+    });
   }
 }
 

@@ -302,12 +302,86 @@ app.get('/api/workouts/:id', async (req, res) => {
       return res.status(404).json({ message: 'Workout not found' });
     }
 
+
     res.json(result.rows[0]);
   } catch (error) {
     console.error('Error fetching workout details:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
+// Get exercises for a specific workout
+app.get('/api/workouts/:id/exercises', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const query = `
+      SELECT we.id as workout_exercise_id, we.order_index, we.default_sets, we.default_reps, 
+             e.id as exercise_id, e.name, e.description, e.target_muscle_group, e.video_url
+      FROM workout_exercises we
+      JOIN exercises e ON we.exercise_id = e.id
+      WHERE we.workout_id = $1
+      ORDER BY we.order_index ASC
+    `;
+    const result = await pool.query(query, [id]);
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching workout exercises:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Create a workout log
+app.post('/api/workout-logs', async (req, res) => {
+  try {
+    const { workout_id, duration_seconds, exercises, user_id } = req.body;
+    // exercises is an array of { exercise_id, sets: [{ set_number, reps, weight }] }
+    
+    if (!workout_id) {
+       return res.status(400).json({ message: 'Workout ID is required' });
+    }
+
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      
+      // Create log
+      const logQuery = `
+        INSERT INTO workout_logs (user_id, workout_id, start_time, end_time, total_duration_seconds, status)
+        VALUES ($1, $2, NOW() - interval '${duration_seconds || 0} seconds', NOW(), $3, 'completed')
+        RETURNING id
+      `;
+      const logResult = await client.query(logQuery, [user_id || null, workout_id, duration_seconds || 0]);
+      const logId = logResult.rows[0].id;
+
+      // Create log entries
+      if (exercises && Array.isArray(exercises)) {
+        for (const ex of exercises) {
+          if (ex.sets && Array.isArray(ex.sets)) {
+            for (const set of ex.sets) {
+              const entryQuery = `
+                INSERT INTO workout_log_entries (workout_log_id, exercise_id, set_number, reps, weight_kg)
+                VALUES ($1, $2, $3, $4, $5)
+              `;
+              await client.query(entryQuery, [logId, ex.exercise_id, set.set_number, set.reps, set.weight || 0]);
+            }
+          }
+        }
+      }
+
+      await client.query('COMMIT');
+      res.status(201).json({ message: 'Workout logged successfully', id: logId });
+    } catch (e) {
+      await client.query('ROLLBACK');
+      throw e;
+    } finally {
+      client.release();
+    }
+  } catch (error) {
+    console.error('Error logging workout:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 
 
 // Example protected endpoint
