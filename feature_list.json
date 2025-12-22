@@ -14,6 +14,22 @@
     "passes": true,
     "selected": true,
     "order": 3
+  },
+  {
+    "id": "workout-tracking",
+    "category": "functional",
+    "description": "Track workout completion, sets, reps, and duration with visual progress indicators and statistics",
+    "steps": [
+      "Create active workout session screen",
+      "Implement timer for duration tracking",
+      "Add inputs for sets and reps logging",
+      "Add 'Complete Workout' functionality",
+      "Store workout history in backend",
+      "Display progress indicators/statistics"
+    ],
+    "priority": 2,
+    "passes": false,
+    "selected": true,
+    "order": 4
   }
 ]
-
