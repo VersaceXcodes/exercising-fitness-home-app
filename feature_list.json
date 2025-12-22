@@ -28,7 +28,7 @@
       "Display progress indicators/statistics"
     ],
     "priority": 2,
-    "passes": false,
+    "passes": true,
     "selected": true,
     "order": 4
   }

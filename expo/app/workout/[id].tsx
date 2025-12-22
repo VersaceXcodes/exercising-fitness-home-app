@@ -39,6 +39,9 @@ export default function ActiveWorkoutScreen() {
   // Logging state: exercise_id -> SetLog[]
   const [logs, setLogs] = useState<Record<number, SetLog[]>>({});
 
+  const [showSummary, setShowSummary] = useState(false);
+  const [stats, setStats] = useState({ duration: 0, totalVolume: 0, setsCompleted: 0, totalSets: 0 });
+
   useEffect(() => {
     if (id) {
       loadData();
@@ -76,42 +79,27 @@ export default function ActiveWorkoutScreen() {
   const loadData = async () => {
     try {
       setLoading(true);
-      // Fetch workout details (re-using existing endpoint, might need adjustment if not available by ID easily without category)
-      // Actually apiService.getWorkouts returns array. I added getWorkout(id) to backend but not api.ts?
-      // Wait, I did verify backend has `app.get('/api/workouts/:id', ...)`
-      // I need to check `api.ts` if it has `getWorkout(id)`. 
-      // Checking `api.ts`: It has `getProperty` but for workouts it only has `getWorkouts` and `getWorkoutCategories`.
-      // I should have added `getWorkout` to `api.ts`.
-      
-      // Let's assume I can use `fetch` directly or I'll update `api.ts` later. 
-      // Ideally I should update `api.ts`. I will fix this in a moment.
-      // For now I'll use a direct fetch wrapper or add it.
-      
-      // Workaround: I'll use `apiService`'s internal request method if I could, but it's private.
-      // I will update `api.ts` properly before running this screen.
-      
-      const workoutData = await apiService.request(`/api/workouts/${id}`); 
-      // Wait, `request` is private. I must update `api.ts` to expose `getWorkout`.
-      
+      const workoutData = await apiService.getWorkout(id as string);
       const exercisesData = await apiService.getWorkoutExercises(Number(id));
       
+      const list = Array.isArray(exercisesData) ? exercisesData : exercisesData.data || [];
+      // Handle response structure if wrapped in data
+      const workoutDetails = workoutData.data || workoutData;
+
+      setExercises(list);
+      setWorkout(workoutDetails);
+
       // Initialize logs
       const initialLogs: Record<number, SetLog[]> = {};
-      if (Array.isArray(exercisesData.data || exercisesData)) {
-         const list = Array.isArray(exercisesData) ? exercisesData : exercisesData.data;
-         setExercises(list);
-         setWorkout(workoutData.data || workoutData);
-
-         list.forEach((ex: Exercise) => {
-           initialLogs[ex.exercise_id] = Array.from({ length: ex.default_sets }).map((_, i) => ({
-             set_number: i + 1,
-             reps: ex.default_reps.toString(),
-             weight: '0',
-             completed: false
-           }));
-         });
-         setLogs(initialLogs);
-      }
+      list.forEach((ex: Exercise) => {
+        initialLogs[ex.exercise_id] = Array.from({ length: ex.default_sets }).map((_, i) => ({
+          set_number: i + 1,
+          reps: ex.default_reps.toString(),
+          weight: '0',
+          completed: false
+        }));
+      });
+      setLogs(initialLogs);
     } catch (err) {
       console.error('Failed to load workout data', err);
       Alert.alert('Error', 'Failed to load workout data');
@@ -128,32 +116,64 @@ export default function ActiveWorkoutScreen() {
     });
   };
 
+  const calculateProgress = () => {
+    let totalSets = 0;
+    let completedSets = 0;
+    Object.values(logs).forEach(sets => {
+      sets.forEach(set => {
+        totalSets++;
+        if (set.completed) completedSets++;
+      });
+    });
+    return totalSets === 0 ? 0 : completedSets / totalSets;
+  };
+
   const handleFinish = async () => {
     stopTimer();
-    try {
-      // Prepare payload
-      const exercisesPayload = Object.entries(logs).map(([exerciseId, sets]) => ({
+    
+    // Calculate stats
+    let totalVolume = 0;
+    let completedSets = 0;
+    let totalSets = 0;
+    
+    const exercisesPayload = Object.entries(logs).map(([exerciseId, sets]) => {
+      const completed = sets.filter(s => s.completed);
+      completed.forEach(s => {
+        const weight = parseFloat(s.weight) || 0;
+        const reps = parseInt(s.reps) || 0;
+        totalVolume += weight * reps;
+      });
+      completedSets += completed.length;
+      totalSets += sets.length;
+      
+      return {
         exercise_id: Number(exerciseId),
-        sets: sets.filter(s => s.completed).map(s => ({
+        sets: completed.map(s => ({
           set_number: s.set_number,
           reps: parseInt(s.reps) || 0,
           weight: parseFloat(s.weight) || 0
         }))
-      }));
+      };
+    });
 
+    setStats({
+      duration,
+      totalVolume,
+      setsCompleted: completedSets,
+      totalSets
+    });
+    
+    setShowSummary(true);
+
+    try {
       await apiService.logWorkout({
         workout_id: Number(id),
         duration_seconds: duration,
         exercises: exercisesPayload
       });
-
-      Alert.alert('Success', 'Workout completed!', [
-        { text: 'OK', onPress: () => router.dismiss() } // or router.push('/')
-      ]);
     } catch (err) {
       console.error('Failed to save workout', err);
-      Alert.alert('Error', 'Failed to save workout');
-      startTimer(); // Resume if failed
+      Alert.alert('Error', 'Failed to save workout log, but your session is finished.');
     }
   };
 
@@ -164,6 +184,40 @@ export default function ActiveWorkoutScreen() {
       </ThemedView>
     );
   }
+
+  if (showSummary) {
+    return (
+      <ThemedView style={styles.container}>
+        <View style={styles.summaryHeader}>
+          <ThemedText type="title">Workout Complete!</ThemedText>
+          <ThemedText style={styles.summarySubtext}>Great job!</ThemedText>
+        </View>
+        
+        <View style={styles.statsContainer}>
+          <View style={styles.statItem}>
+            <ThemedText style={styles.statValue}>{formatTime(stats.duration)}</ThemedText>
+            <ThemedText style={styles.statLabel}>Duration</ThemedText>
+          </View>
+          <View style={styles.statItem}>
+            <ThemedText style={styles.statValue}>{stats.totalVolume.toLocaleString()} kg</ThemedText>
+            <ThemedText style={styles.statLabel}>Total Volume</ThemedText>
+          </View>
+          <View style={styles.statItem}>
+            <ThemedText style={styles.statValue}>{stats.setsCompleted} / {stats.totalSets}</ThemedText>
+            <ThemedText style={styles.statLabel}>Sets</ThemedText>
+          </View>
+        </View>
+
+        <View style={styles.footer}>
+          <TouchableOpacity style={styles.finishButton} onPress={() => router.dismiss()}>
+            <ThemedText style={styles.finishButtonText}>Close</ThemedText>
+          </TouchableOpacity>
+        </View>
+      </ThemedView>
+    );
+  }
+
+  const progress = calculateProgress();
 
   return (
     <ThemedView style={styles.container}>
@@ -179,6 +233,11 @@ export default function ActiveWorkoutScreen() {
         <TouchableOpacity onPress={togglePause} style={styles.pauseButton}>
           <IconSymbol name={isPaused ? "play.fill" : "pause.fill"} size={20} color="#007AFF" />
         </TouchableOpacity>
+      </View>
+
+      {/* Progress Bar */}
+      <View style={styles.progressBarContainer}>
+        <View style={[styles.progressBarFill, { width: `${progress * 100}%` }]} />
       </View>
 
       <ScrollView style={styles.scrollView}>
@@ -376,5 +435,53 @@ const styles = StyleSheet.create({
   },
   footerSpace: {
     height: 40,
-  }
+  },
+  // New Styles
+  summaryHeader: {
+    paddingTop: 80,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    marginBottom: 40,
+  },
+  summarySubtext: {
+    fontSize: 18,
+    color: '#666',
+    marginTop: 8,
+  },
+  statsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingHorizontal: 20,
+    marginBottom: 40,
+  },
+  statItem: {
+    alignItems: 'center',
+    backgroundColor: 'white',
+    padding: 16,
+    borderRadius: 12,
+    minWidth: 100,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  statValue: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  statLabel: {
+    fontSize: 12,
+    color: '#666',
+  },
+  progressBarContainer: {
+    height: 4,
+    backgroundColor: '#f0f0f0',
+    width: '100%',
+  },
+  progressBarFill: {
+    height: '100%',
+    backgroundColor: '#34C759',
+  },
 });

@@ -232,6 +232,10 @@ class ApiService {
     return this.request(`/api/workouts${query}`);
   }
 
+  async getWorkout(workoutId: number | string) {
+    return this.request(`/api/workouts/${workoutId}`);
+  }
+
   async getWorkoutExercises(workoutId: number) {
     return this.request(`/api/workouts/${workoutId}/exercises`);
   }
