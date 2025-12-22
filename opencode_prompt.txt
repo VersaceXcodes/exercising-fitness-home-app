@@ -1,32 +1,43 @@
-# Feature Implementation
+You are analyzing a codebase to suggest improvements.
 
-## Feature Details
-- **ID**: workout-tracking
-- **Title**: Track workout completion, sets, reps, and duration with visual progress indicators and statistics
-- **Category**: functional
+## Task
+Suggest new features that would add value to users.
 
-## Description
-Track workout completion, sets, reps, and duration with visual progress indicators and statistics
+## Project Description
+exercising fitness home app
 
-## Verification Steps
-1. Create active workout session screen
-2. Implement timer for duration tracking
-3. Add inputs for sets and reps logging
-4. Add 'Complete Workout' functionality
-5. Store workout history in backend
-6. Display progress indicators/statistics
+## Existing Features (2 total)
+- [functional] Display categorized list of available home workout routines
+- [functional] Track workout completion, sets, reps, and duration with visual progress indicators and statistics
+
+
+
 
 ## Instructions
-1. **Explore**: Review the existing codebase structure and patterns
-2. **Plan**: Design your implementation approach
-3. **Implement**: Write clean, production-quality code
-4. **Test**: Verify the feature works as expected
-5. **Update**: Mark feature as "passes": true in feature_list.json
-6. **Commit**: Use message "feat(functional): Track workout completion, sets, reps, and duration with visual progress indicators and statistics"
+1. First, explore the codebase to understand:
+   - Tech stack and dependencies (check package.json files)
+   - Project structure and architecture
+   - Existing components, pages, and API endpoints
+   - Data models and schemas
 
-## Important
-- Implement ONLY this specific feature (ID: workout-tracking)
-- Do NOT modify features already marked as passes: true
-- Follow existing code patterns and conventions
-- Maintain backward compatibility
-- Update feature_list.json to set "passes": true when complete
+2. Then, generate 5 concrete suggestions that:
+   - Align with the project's tech stack and architecture
+   - Build on existing patterns (don't suggest things already implemented)
+   - Are realistic given the current project structure
+   - Leverage existing dependencies when possible
+   - Reference actual files/components you discovered
+
+3. Format your final response as ONLY a valid JSON array (no markdown, no explanation):
+[
+  {
+    "id": "unique-kebab-case-id",
+    "category": "User Experience" | "Security" | "Performance" | "Data" | "Integration" | "Admin",
+    "description": "Clear description of what to implement",
+    "steps": ["Step 1 referencing actual files", "Step 2", "Step 3"],
+    "priority": 1,
+    "complexity": "low" | "medium" | "high",
+    "reasoning": "Why this fits the existing architecture"
+  }
+]
+
+IMPORTANT: Your final output must be ONLY the JSON array, no other text.
