@@ -20,7 +20,7 @@ exercising fitness home app
    - Existing components, pages, and API endpoints
    - Data models and schemas
 
-2. Then, generate 5 concrete suggestions that:
+2. Then, generate 10 concrete suggestions that:
    - Align with the project's tech stack and architecture
    - Build on existing patterns (don't suggest things already implemented)
    - Are realistic given the current project structure
