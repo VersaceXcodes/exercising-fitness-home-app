@@ -9,7 +9,8 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.anonymous.adkar"
     },
     "android": {
       "adaptiveIcon": {
@@ -19,7 +20,8 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.anonymous.adkar"
     },
     "web": {
       "output": "static",
@@ -45,7 +47,7 @@
       "reactCompiler": true
     },
     "extra": {
-      "apiUrl": "https://ta-01kd5pxxkk2gkhz6w2yf2tb8cz-3000.wo-v35apxho467l9nfu549wc8zso.w.modal.host",
+      "apiUrl": "https://ta-01kd8gw9kjffm8ex4pdbpp07b4-3000.wo-0isvfwpub39y45lm5njcg83ju.w.modal.host",
       "frontendUrl": "https://ta-01kd5pxxkk2gkhz6w2yf2tb8cz-5173.wo-v35apxho467l9nfu549wc8zso.w.modal.host"
     }
   }

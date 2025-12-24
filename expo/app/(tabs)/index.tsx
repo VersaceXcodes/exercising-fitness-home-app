@@ -24,21 +24,53 @@ interface Workout {
   image_url: string;
 }
 
+// Motivational fitness quotes
+const FITNESS_QUOTES = [
+  { quote: "The only bad workout is the one that didn't happen.", author: "Anonymous" },
+  { quote: "Your body can stand almost anything. It's your mind you have to convince.", author: "Anonymous" },
+  { quote: "The pain you feel today will be the strength you feel tomorrow.", author: "Anonymous" },
+  { quote: "Don't wish for it, work for it.", author: "Anonymous" },
+  { quote: "Success starts with self-discipline.", author: "Anonymous" },
+  { quote: "The difference between try and triumph is a little umph.", author: "Anonymous" },
+  { quote: "Fitness is not about being better than someone else. It's about being better than you used to be.", author: "Khloe Kardashian" },
+  { quote: "Take care of your body. It's the only place you have to live.", author: "Jim Rohn" },
+  { quote: "The only person you are destined to become is the person you decide to be.", author: "Ralph Waldo Emerson" },
+  { quote: "Push yourself because no one else is going to do it for you.", author: "Anonymous" },
+  { quote: "Great things never come from comfort zones.", author: "Anonymous" },
+  { quote: "Dream bigger. Do bigger.", author: "Anonymous" },
+  { quote: "A one hour workout is only 4% of your day.", author: "Anonymous" },
+  { quote: "Motivation is what gets you started. Habit is what keeps you going.", author: "Jim Ryun" },
+  { quote: "The body achieves what the mind believes.", author: "Anonymous" },
+];
+
 export default function HomeScreen() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [featuredWorkout, setFeaturedWorkout] = useState<Workout | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentDate, setCurrentDate] = useState('');
+  const [dailyQuote, setDailyQuote] = useState({ quote: '', author: '' });
 
   useEffect(() => {
     loadHomeData();
     updateDate();
+    updateDailyQuote();
   }, []);
 
   const updateDate = () => {
     const date = new Date();
     const options: Intl.DateTimeFormatOptions = { weekday: 'long', month: 'long', day: 'numeric' };
     setCurrentDate(date.toLocaleDateString('en-US', options));
+  };
+
+  const updateDailyQuote = () => {
+    // Get quote based on day of year to ensure same quote throughout the day
+    const now = new Date();
+    const start = new Date(now.getFullYear(), 0, 0);
+    const diff = now.getTime() - start.getTime();
+    const oneDay = 1000 * 60 * 60 * 24;
+    const dayOfYear = Math.floor(diff / oneDay);
+    const quoteIndex = dayOfYear % FITNESS_QUOTES.length;
+    setDailyQuote(FITNESS_QUOTES[quoteIndex]);
   };
 
   const loadHomeData = async () => {
@@ -127,6 +159,27 @@ export default function HomeScreen() {
           <ThemedText style={styles.statNumber}>0</ThemedText>
           <ThemedText style={styles.statLabel}>Streak</ThemedText>
         </View>
+      </View>
+
+      {/* Quote of the Day Section */}
+      <View style={styles.quoteSection}>
+        <LinearGradient
+          colors={['#E8EAF6', '#C5CAE9']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.quoteCard}
+        >
+          <View style={styles.quoteIconContainer}>
+            <IconSymbol name="quote.bubble.fill" size={32} color="#5C6BC0" />
+          </View>
+          <View style={styles.quoteHeader}>
+            <IconSymbol name="sparkles" size={16} color="#5C6BC0" />
+            <ThemedText style={styles.quoteLabel}>Quote of the Day</ThemedText>
+            <IconSymbol name="sparkles" size={16} color="#5C6BC0" />
+          </View>
+          <ThemedText style={styles.quoteText}>"{dailyQuote.quote}"</ThemedText>
+          <ThemedText style={styles.quoteAuthor}>— {dailyQuote.author}</ThemedText>
+        </LinearGradient>
       </View>
 
       {/* Enhanced Workout Guides Section */}
@@ -480,6 +533,81 @@ const styles = StyleSheet.create({
     opacity: 0.7,
     fontWeight: '600',
     color: '#666',
+  },
+  quoteSection: {
+    paddingHorizontal: 24,
+    marginBottom: 28,
+  },
+  quoteCard: {
+    borderRadius: 20,
+    padding: 24,
+    alignItems: 'center',
+    ...Platform.select({
+      ios: {
+        shadowColor: '#5C6BC0',
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.15,
+        shadowRadius: 10,
+      },
+      android: {
+        elevation: 6,
+      },
+      web: {
+        boxShadow: '0 3px 10px rgba(92, 107, 192, 0.15)',
+      },
+    }),
+  },
+  quoteIconContainer: {
+    backgroundColor: '#fff',
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#5C6BC0',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 6,
+      },
+      android: {
+        elevation: 4,
+      },
+      web: {
+        boxShadow: '0 2px 6px rgba(92, 107, 192, 0.2)',
+      },
+    }),
+  },
+  quoteHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 16,
+  },
+  quoteLabel: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#5C6BC0',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+  quoteText: {
+    fontSize: 17,
+    fontWeight: '600',
+    textAlign: 'center',
+    lineHeight: 26,
+    color: '#1A1A1A',
+    marginBottom: 12,
+    fontStyle: 'italic',
+    paddingHorizontal: 8,
+  },
+  quoteAuthor: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#5C6BC0',
+    textAlign: 'center',
   },
   section: {
     paddingHorizontal: 24,
