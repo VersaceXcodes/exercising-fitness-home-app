@@ -34,5 +34,175 @@
     "status": "completed",
     "lastAttemptAt": "2025-12-22T15:03:37.724Z",
     "completedAt": "2025-12-22T15:03:37.724Z"
+  },
+  {
+    "id": "workout-history-log-1766605069177",
+    "category": "Data",
+    "description": "Implement a workout history screen to view past completed workouts and logs",
+    "steps": [
+      "Add GET /api/workout-logs endpoint to backend/server.ts filtering by user_id",
+      "Create new HistoryScreen component in expo/app/(tabs)/history.tsx",
+      "Add getWorkoutLogs method to expo/services/api.ts"
+    ],
+    "priority": 1,
+    "passes": false,
+    "selected": true,
+    "status": "pending",
+    "order": 3,
+    "source": "user-added",
+    "addedAt": "2025-12-24T19:37:49.747Z"
+  },
+  {
+    "id": "admin-content-dashboard-1766605069177",
+    "category": "Admin",
+    "description": "Develop a web-based admin dashboard to manage workouts, exercises, and categories",
+    "steps": [
+      "Initialize React Router in vitereact/src/App.tsx",
+      "Create CRUD forms for Workouts and Exercises in vitereact/src/components",
+      "Connect vitereact frontend to backend/server.ts API endpoints"
+    ],
+    "priority": 2,
+    "passes": false,
+    "selected": true,
+    "status": "pending",
+    "order": 4,
+    "source": "user-added",
+    "addedAt": "2025-12-24T19:37:49.747Z"
+  },
+  {
+    "id": "user-profile-management-1766605069177",
+    "category": "User Experience",
+    "description": "Create a dedicated User Profile screen for managing account details and viewing stats",
+    "steps": [
+      "Create ProfileScreen in expo/app/(tabs)/profile.tsx",
+      "Integrate GET /api/auth/me and PUT /api/auth/profile endpoints",
+      "Display aggregated user statistics from backend/server.ts"
+    ],
+    "priority": 1,
+    "passes": false,
+    "selected": true,
+    "status": "pending",
+    "order": 5,
+    "source": "user-added",
+    "addedAt": "2025-12-24T19:37:49.747Z"
+  },
+  {
+    "id": "exercise-video-integration-1766605069177",
+    "category": "User Experience",
+    "description": "Embed video playback for exercises within the active workout screen",
+    "steps": [
+      "Install expo-av or similar video package in expo/",
+      "Update ActiveWorkoutScreen in expo/app/workout/[id].tsx to render video player",
+      "Bind video_url from the 'exercises' table to the player component"
+    ],
+    "priority": 2,
+    "passes": false,
+    "selected": true,
+    "status": "pending",
+    "order": 6,
+    "source": "user-added",
+    "addedAt": "2025-12-24T19:37:49.747Z"
+  },
+  {
+    "id": "workout-favorites-system-1766605069177",
+    "category": "Data",
+    "description": "Allow users to favorite/bookmark specific workouts for quick access",
+    "steps": [
+      "Create 'user_favorites' table in backend/db.sql",
+      "Add POST/DELETE /api/favorites endpoints to backend/server.ts",
+      "Add heart icon toggle to WorkoutDetails in expo/app/(tabs)/explore.tsx"
+    ],
+    "priority": 3,
+    "passes": false,
+    "selected": true,
+    "status": "pending",
+    "order": 7,
+    "source": "user-added",
+    "addedAt": "2025-12-24T19:37:49.747Z"
+  },
+  {
+    "id": "inter-set-rest-timer-1766605069177",
+    "category": "User Experience",
+    "description": "Add an automatic rest timer that triggers between workout sets",
+    "steps": [
+      "Modify ActiveWorkoutScreen in expo/app/workout/[id].tsx",
+      "Add state for 'rest' mode vs 'active' mode",
+      "Trigger countdown overlay when a set is marked as completed"
+    ],
+    "priority": 2,
+    "passes": false,
+    "selected": true,
+    "status": "pending",
+    "order": 8,
+    "source": "user-added",
+    "addedAt": "2025-12-24T19:37:49.747Z"
+  },
+  {
+    "id": "workout-search-and-filter-1766605069177",
+    "category": "Integration",
+    "description": "Add search by text and filtering by difficulty to the workout explorer",
+    "steps": [
+      "Update GET /api/workouts in backend/server.ts to accept search and difficulty query params",
+      "Add SearchBar and Filter chips UI to expo/app/(tabs)/explore.tsx",
+      "Update apiService.getWorkouts in expo/services/api.ts to pass new params"
+    ],
+    "priority": 2,
+    "passes": false,
+    "selected": true,
+    "status": "pending",
+    "order": 9,
+    "source": "user-added",
+    "addedAt": "2025-12-24T19:37:49.747Z"
+  },
+  {
+    "id": "weight-progression-charts-1766605069177",
+    "category": "Data",
+    "description": "Visualize strength progress with charts showing weight lifted over time",
+    "steps": [
+      "Add GET /api/stats/exercise/:id endpoint to backend/server.ts",
+      "Install react-native-chart-kit in expo/",
+      "Create ProgressionChart component in expo/components/ui"
+    ],
+    "priority": 3,
+    "passes": false,
+    "selected": true,
+    "status": "pending",
+    "order": 10,
+    "source": "user-added",
+    "addedAt": "2025-12-24T19:37:49.747Z"
+  },
+  {
+    "id": "offline-data-caching-1766605069177",
+    "category": "Performance",
+    "description": "Cache workout categories and details for offline access",
+    "steps": [
+      "Install @react-native-async-storage/async-storage in expo/",
+      "Implement caching layer in expo/services/api.ts",
+      "Modify loadHomeData in expo/app/(tabs)/index.tsx to try cache on failure"
+    ],
+    "priority": 2,
+    "passes": false,
+    "selected": true,
+    "status": "pending",
+    "order": 11,
+    "source": "user-added",
+    "addedAt": "2025-12-24T19:37:49.747Z"
+  },
+  {
+    "id": "social-share-summary-1766605069177",
+    "category": "Integration",
+    "description": "Enable sharing of workout summary stats to social media platforms",
+    "steps": [
+      "Install expo-sharing and expo-view-shot in expo/",
+      "Create a shareable view layout in ActiveWorkoutScreen (summary mode)",
+      "Implement capture and share logic in handleFinish function"
+    ],
+    "priority": 3,
+    "passes": false,
+    "selected": true,
+    "status": "pending",
+    "order": 12,
+    "source": "user-added",
+    "addedAt": "2025-12-24T19:37:49.747Z"
   }
 ]
