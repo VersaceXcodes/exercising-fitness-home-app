@@ -1,15 +1,1 @@
-{
-  "mcp": {
-    "playwright": {
-      "type": "local",
-      "command": [
-        "npx",
-        "@playwright/mcp@latest",
-        "--headless",
-        "--isolated"
-      ],
-      "enabled": true
-    }
-  },
-  "$schema": "https://opencode.ai/config.json"
-}
+{"mcp":{"playwright":{"type":"local","command":["npx","@playwright/mcp@latest","--headless","--isolated"],"enabled":true}},"permissions":{"external_directory":"allow"}}
