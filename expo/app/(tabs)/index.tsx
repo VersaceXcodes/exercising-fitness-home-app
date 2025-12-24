@@ -161,24 +161,41 @@ export default function HomeScreen() {
         </View>
       </View>
 
-      {/* Quote of the Day Section */}
+      {/* Quote of the Day Section - Enhanced Design */}
       <View style={styles.quoteSection}>
         <LinearGradient
-          colors={['#E8EAF6', '#C5CAE9']}
+          colors={['#667eea', '#764ba2', '#f093fb']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.quoteCard}
         >
-          <View style={styles.quoteIconContainer}>
-            <IconSymbol name="quote.bubble.fill" size={32} color="#5C6BC0" />
+          {/* Decorative elements */}
+          <View style={styles.quoteDecorativeTop}>
+            <View style={styles.quoteMark}>
+              <ThemedText style={styles.quoteMarkText}>"</ThemedText>
+            </View>
           </View>
-          <View style={styles.quoteHeader}>
-            <IconSymbol name="sparkles" size={16} color="#5C6BC0" />
-            <ThemedText style={styles.quoteLabel}>Quote of the Day</ThemedText>
-            <IconSymbol name="sparkles" size={16} color="#5C6BC0" />
+          
+          <View style={styles.quoteContentContainer}>
+            <View style={styles.quoteHeader}>
+              <IconSymbol name="sparkles" size={18} color="#FFF" />
+              <ThemedText style={styles.quoteLabel}>Daily Inspiration</ThemedText>
+              <IconSymbol name="sparkles" size={18} color="#FFF" />
+            </View>
+            
+            <ThemedText style={styles.quoteText}>{dailyQuote.quote}</ThemedText>
+            <View style={styles.quoteAuthorContainer}>
+              <View style={styles.quoteAuthorLine} />
+              <ThemedText style={styles.quoteAuthor}>{dailyQuote.author}</ThemedText>
+            </View>
           </View>
-          <ThemedText style={styles.quoteText}>"{dailyQuote.quote}"</ThemedText>
-          <ThemedText style={styles.quoteAuthor}>— {dailyQuote.author}</ThemedText>
+          
+          {/* Decorative bottom quote mark */}
+          <View style={styles.quoteDecorativeBottom}>
+            <View style={styles.quoteMarkBottom}>
+              <ThemedText style={styles.quoteMarkText}>"</ThemedText>
+            </View>
+          </View>
         </LinearGradient>
       </View>
 
@@ -539,75 +556,108 @@ const styles = StyleSheet.create({
     marginBottom: 28,
   },
   quoteCard: {
-    borderRadius: 20,
-    padding: 24,
-    alignItems: 'center',
+    borderRadius: 28,
+    padding: 32,
+    position: 'relative',
+    overflow: 'hidden',
+    minHeight: 220,
+    justifyContent: 'center',
     ...Platform.select({
       ios: {
-        shadowColor: '#5C6BC0',
-        shadowOffset: { width: 0, height: 3 },
-        shadowOpacity: 0.15,
-        shadowRadius: 10,
+        shadowColor: '#667eea',
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.3,
+        shadowRadius: 16,
       },
       android: {
-        elevation: 6,
+        elevation: 12,
       },
       web: {
-        boxShadow: '0 3px 10px rgba(92, 107, 192, 0.15)',
+        boxShadow: '0 8px 24px rgba(102, 126, 234, 0.3)',
       },
     }),
   },
-  quoteIconContainer: {
-    backgroundColor: '#fff',
-    width: 64,
-    height: 64,
-    borderRadius: 32,
+  quoteDecorativeTop: {
+    position: 'absolute',
+    top: -20,
+    left: -10,
+    opacity: 0.15,
+  },
+  quoteMark: {
+    width: 80,
+    height: 80,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 16,
-    ...Platform.select({
-      ios: {
-        shadowColor: '#5C6BC0',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 6,
-      },
-      android: {
-        elevation: 4,
-      },
-      web: {
-        boxShadow: '0 2px 6px rgba(92, 107, 192, 0.2)',
-      },
-    }),
+  },
+  quoteMarkText: {
+    fontSize: 120,
+    fontWeight: '900',
+    color: '#FFF',
+    lineHeight: 120,
+  },
+  quoteDecorativeBottom: {
+    position: 'absolute',
+    bottom: -30,
+    right: -10,
+    opacity: 0.15,
+    transform: [{ rotate: '180deg' }],
+  },
+  quoteMarkBottom: {
+    width: 80,
+    height: 80,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  quoteContentContainer: {
+    zIndex: 1,
+    alignItems: 'center',
   },
   quoteHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    marginBottom: 16,
+    gap: 10,
+    marginBottom: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    borderRadius: 20,
   },
   quoteLabel: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: '#5C6BC0',
+    fontSize: 12,
+    fontWeight: '800',
+    color: '#FFF',
     textTransform: 'uppercase',
-    letterSpacing: 1,
+    letterSpacing: 1.5,
   },
   quoteText: {
-    fontSize: 17,
+    fontSize: 19,
     fontWeight: '600',
     textAlign: 'center',
-    lineHeight: 26,
-    color: '#1A1A1A',
-    marginBottom: 12,
-    fontStyle: 'italic',
-    paddingHorizontal: 8,
+    lineHeight: 30,
+    color: '#FFF',
+    marginBottom: 20,
+    paddingHorizontal: 12,
+    textShadowColor: 'rgba(0, 0, 0, 0.15)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
+  },
+  quoteAuthorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  quoteAuthorLine: {
+    width: 40,
+    height: 2,
+    backgroundColor: 'rgba(255, 255, 255, 0.6)',
+    borderRadius: 1,
   },
   quoteAuthor: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#5C6BC0',
-    textAlign: 'center',
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#FFF',
+    letterSpacing: 0.5,
+    opacity: 0.95,
   },
   section: {
     paddingHorizontal: 24,
