@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Image, StyleSheet, ScrollView, View, TouchableOpacity, ActivityIndicator, ImageBackground } from 'react-native';
+import { Image, StyleSheet, ScrollView, View, TouchableOpacity, ActivityIndicator, ImageBackground, Platform } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
@@ -78,149 +79,218 @@ export default function HomeScreen() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      {/* Header Section */}
-      <View style={styles.header}>
-        <View>
-          <ThemedText style={styles.dateText}>{currentDate}</ThemedText>
-          <ThemedText type="title" style={styles.welcomeTitle}>
-            Ready to Workout?
-          </ThemedText>
+      {/* Header Section with Gradient */}
+      <LinearGradient
+        colors={['#FF6B6B', '#FF5722', '#E64A19']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.headerGradient}
+      >
+        <View style={styles.header}>
+          <View style={styles.headerTextContainer}>
+            <ThemedText style={styles.dateText}>{currentDate}</ThemedText>
+            <ThemedText type="title" style={styles.welcomeTitle}>
+              Ready to Workout?
+            </ThemedText>
+            <ThemedText style={styles.subTitle}>
+              Let's get stronger together! 💪
+            </ThemedText>
+          </View>
+          <TouchableOpacity style={styles.profileButton}>
+            <View style={styles.profileIconContainer}>
+              <IconSymbol name="person.circle.fill" size={40} color="#FFF" />
+            </View>
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.profileButton}>
-          <IconSymbol name="person.circle.fill" size={40} color="#FF5722" />
-        </TouchableOpacity>
-      </View>
+      </LinearGradient>
 
-      {/* Stats Section */}
+      {/* Enhanced Stats Section */}
       <View style={styles.statsContainer}>
-        <View style={styles.statCard}>
-          <IconSymbol name="flame.fill" size={24} color="#FF5722" />
+        <View style={[styles.statCard, styles.statCardOrange]}>
+          <View style={[styles.statIconContainer, { backgroundColor: '#FFE5DD' }]}>
+            <IconSymbol name="flame.fill" size={28} color="#FF5722" />
+          </View>
           <ThemedText style={styles.statNumber}>0</ThemedText>
           <ThemedText style={styles.statLabel}>Workouts</ThemedText>
         </View>
-        <View style={styles.statCard}>
-          <IconSymbol name="clock.fill" size={24} color="#4CAF50" />
+        <View style={[styles.statCard, styles.statCardGreen]}>
+          <View style={[styles.statIconContainer, { backgroundColor: '#E8F5E9' }]}>
+            <IconSymbol name="clock.fill" size={28} color="#4CAF50" />
+          </View>
           <ThemedText style={styles.statNumber}>0</ThemedText>
           <ThemedText style={styles.statLabel}>Minutes</ThemedText>
         </View>
-        <View style={styles.statCard}>
-          <IconSymbol name="bolt.fill" size={24} color="#FFC107" />
+        <View style={[styles.statCard, styles.statCardYellow]}>
+          <View style={[styles.statIconContainer, { backgroundColor: '#FFF9E1' }]}>
+            <IconSymbol name="bolt.fill" size={28} color="#FFC107" />
+          </View>
           <ThemedText style={styles.statNumber}>0</ThemedText>
           <ThemedText style={styles.statLabel}>Streak</ThemedText>
         </View>
       </View>
 
-      {/* Workout Guides Section */}
+      {/* Enhanced Workout Guides Section */}
       <View style={styles.section}>
-        <ThemedText type="subtitle" style={styles.sectionTitle}>
-          Workout Guides
-        </ThemedText>
+        <View style={styles.sectionHeader}>
+          <ThemedText type="subtitle" style={styles.sectionTitle}>
+            🎯 Workout Guides
+          </ThemedText>
+        </View>
         <ScrollView 
           horizontal 
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.guidesContainer}
         >
-          <TouchableOpacity style={[styles.guideCard, { backgroundColor: '#E3F2FD' }]}>
-            <View style={styles.guideIconContainer}>
-              <IconSymbol name="figure.walk" size={32} color="#2196F3" />
-            </View>
-            <ThemedText style={styles.guideTitle}>Beginner's Guide</ThemedText>
-            <ThemedText style={styles.guideDescription}>
-              Start your fitness journey with proper form and technique
-            </ThemedText>
-          </TouchableOpacity>
+          <LinearGradient
+            colors={['#E3F2FD', '#BBDEFB']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.guideCard}
+          >
+            <TouchableOpacity style={styles.guideCardContent}>
+              <View style={[styles.guideIconContainer, { backgroundColor: '#fff' }]}>
+                <IconSymbol name="figure.walk" size={32} color="#2196F3" />
+              </View>
+              <ThemedText style={styles.guideTitle}>Beginner's Guide</ThemedText>
+              <ThemedText style={styles.guideDescription}>
+                Start your fitness journey with proper form and technique
+              </ThemedText>
+            </TouchableOpacity>
+          </LinearGradient>
 
-          <TouchableOpacity style={[styles.guideCard, { backgroundColor: '#F3E5F5' }]}>
-            <View style={styles.guideIconContainer}>
-              <IconSymbol name="heart.fill" size={32} color="#9C27B0" />
-            </View>
-            <ThemedText style={styles.guideTitle}>Cardio Tips</ThemedText>
-            <ThemedText style={styles.guideDescription}>
-              Maximize your cardio workouts for better endurance
-            </ThemedText>
-          </TouchableOpacity>
+          <LinearGradient
+            colors={['#F3E5F5', '#E1BEE7']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.guideCard}
+          >
+            <TouchableOpacity style={styles.guideCardContent}>
+              <View style={[styles.guideIconContainer, { backgroundColor: '#fff' }]}>
+                <IconSymbol name="heart.fill" size={32} color="#9C27B0" />
+              </View>
+              <ThemedText style={styles.guideTitle}>Cardio Tips</ThemedText>
+              <ThemedText style={styles.guideDescription}>
+                Maximize your cardio workouts for better endurance
+              </ThemedText>
+            </TouchableOpacity>
+          </LinearGradient>
 
-          <TouchableOpacity style={[styles.guideCard, { backgroundColor: '#E8F5E9' }]}>
-            <View style={styles.guideIconContainer}>
-              <IconSymbol name="leaf.fill" size={32} color="#4CAF50" />
-            </View>
-            <ThemedText style={styles.guideTitle}>Nutrition Basics</ThemedText>
-            <ThemedText style={styles.guideDescription}>
-              Fuel your body right for optimal performance
-            </ThemedText>
-          </TouchableOpacity>
+          <LinearGradient
+            colors={['#E8F5E9', '#C8E6C9']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.guideCard}
+          >
+            <TouchableOpacity style={styles.guideCardContent}>
+              <View style={[styles.guideIconContainer, { backgroundColor: '#fff' }]}>
+                <IconSymbol name="leaf.fill" size={32} color="#4CAF50" />
+              </View>
+              <ThemedText style={styles.guideTitle}>Nutrition Basics</ThemedText>
+              <ThemedText style={styles.guideDescription}>
+                Fuel your body right for optimal performance
+              </ThemedText>
+            </TouchableOpacity>
+          </LinearGradient>
 
-          <TouchableOpacity style={[styles.guideCard, { backgroundColor: '#FFF3E0' }]}>
-            <View style={styles.guideIconContainer}>
-              <IconSymbol name="moon.zzz.fill" size={32} color="#FF9800" />
-            </View>
-            <ThemedText style={styles.guideTitle}>Recovery Tips</ThemedText>
-            <ThemedText style={styles.guideDescription}>
-              Rest and recover properly to prevent injuries
-            </ThemedText>
-          </TouchableOpacity>
+          <LinearGradient
+            colors={['#FFF3E0', '#FFE0B2']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.guideCard}
+          >
+            <TouchableOpacity style={styles.guideCardContent}>
+              <View style={[styles.guideIconContainer, { backgroundColor: '#fff' }]}>
+                <IconSymbol name="moon.zzz.fill" size={32} color="#FF9800" />
+              </View>
+              <ThemedText style={styles.guideTitle}>Recovery Tips</ThemedText>
+              <ThemedText style={styles.guideDescription}>
+                Rest and recover properly to prevent injuries
+              </ThemedText>
+            </TouchableOpacity>
+          </LinearGradient>
 
-          <TouchableOpacity style={[styles.guideCard, { backgroundColor: '#FFEBEE' }]}>
-            <View style={styles.guideIconContainer}>
-              <IconSymbol name="figure.strengthtraining.traditional" size={32} color="#F44336" />
-            </View>
-            <ThemedText style={styles.guideTitle}>Strength Training</ThemedText>
-            <ThemedText style={styles.guideDescription}>
-              Build muscle effectively with proper techniques
-            </ThemedText>
-          </TouchableOpacity>
+          <LinearGradient
+            colors={['#FFEBEE', '#FFCDD2']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.guideCard}
+          >
+            <TouchableOpacity style={styles.guideCardContent}>
+              <View style={[styles.guideIconContainer, { backgroundColor: '#fff' }]}>
+                <IconSymbol name="figure.strengthtraining.traditional" size={32} color="#F44336" />
+              </View>
+              <ThemedText style={styles.guideTitle}>Strength Training</ThemedText>
+              <ThemedText style={styles.guideDescription}>
+                Build muscle effectively with proper techniques
+              </ThemedText>
+            </TouchableOpacity>
+          </LinearGradient>
         </ScrollView>
       </View>
 
-      {/* Featured Workout */}
+      {/* Enhanced Featured Workout */}
       {featuredWorkout && (
         <View style={styles.section}>
-          <ThemedText type="subtitle" style={styles.sectionTitle}>
-            Today's Recommended
-          </ThemedText>
+          <View style={styles.sectionHeader}>
+            <ThemedText type="subtitle" style={styles.sectionTitle}>
+              ⭐ Today's Recommended
+            </ThemedText>
+          </View>
           <TouchableOpacity 
             style={styles.featuredCard}
             onPress={() => router.push('/explore')}
+            activeOpacity={0.95}
           >
             <ImageBackground
               source={{ uri: featuredWorkout.image_url }}
               style={styles.featuredImage}
-              imageStyle={{ borderRadius: 16 }}
+              imageStyle={{ borderRadius: 20 }}
             >
-              <View style={styles.featuredOverlay}>
+              <LinearGradient
+                colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.7)', 'rgba(0,0,0,0.95)']}
+                style={styles.featuredOverlay}
+              >
+                <View style={styles.featuredBadge}>
+                  <IconSymbol name="star.fill" size={14} color="#FFC107" />
+                  <ThemedText style={styles.featuredBadgeText}>FEATURED</ThemedText>
+                </View>
                 <ThemedText style={styles.featuredTitle}>{featuredWorkout.title}</ThemedText>
                 <View style={styles.featuredMeta}>
                   <View style={styles.featuredMetaItem}>
-                    <IconSymbol name="clock" size={16} color="#fff" />
+                    <View style={styles.metaIconContainer}>
+                      <IconSymbol name="clock" size={16} color="#fff" />
+                    </View>
                     <ThemedText style={styles.featuredMetaText}>
                       {featuredWorkout.duration_minutes} min
                     </ThemedText>
                   </View>
                   <View style={styles.featuredMetaItem}>
-                    <IconSymbol name="flame" size={16} color="#fff" />
+                    <View style={styles.metaIconContainer}>
+                      <IconSymbol name="flame" size={16} color="#fff" />
+                    </View>
                     <ThemedText style={styles.featuredMetaText}>
                       {featuredWorkout.difficulty_level}
                     </ThemedText>
                   </View>
                 </View>
-                <TouchableOpacity style={styles.startButton}>
-                  <ThemedText style={styles.startButtonText}>Start Now</ThemedText>
-                  <IconSymbol name="play.fill" size={16} color="#fff" />
+                <TouchableOpacity style={styles.startButton} activeOpacity={0.8}>
+                  <ThemedText style={styles.startButtonText}>Start Workout</ThemedText>
+                  <IconSymbol name="play.fill" size={18} color="#fff" />
                 </TouchableOpacity>
-              </View>
+              </LinearGradient>
             </ImageBackground>
           </TouchableOpacity>
         </View>
       )}
 
-      {/* Quick Access Categories */}
+      {/* Enhanced Categories */}
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <ThemedText type="subtitle" style={styles.sectionTitle}>
-            Browse by Category
+            🏋️ Browse by Category
           </ThemedText>
-          <TouchableOpacity onPress={() => router.push('/explore')}>
-            <ThemedText style={styles.seeAllText}>See All</ThemedText>
+          <TouchableOpacity onPress={() => router.push('/explore')} activeOpacity={0.7}>
+            <ThemedText style={styles.seeAllText}>See All →</ThemedText>
           </TouchableOpacity>
         </View>
         <View style={styles.categoriesGrid}>
@@ -229,24 +299,36 @@ export default function HomeScreen() {
               key={category.id}
               style={styles.categoryCard}
               onPress={() => router.push('/explore')}
+              activeOpacity={0.9}
             >
               <ImageBackground
                 source={{ uri: category.image_url }}
                 style={styles.categoryImage}
-                imageStyle={{ borderRadius: 12 }}
+                imageStyle={{ borderRadius: 16 }}
               >
-                <View style={styles.categoryOverlay}>
+                <LinearGradient
+                  colors={['rgba(0,0,0,0.1)', 'rgba(0,0,0,0.7)']}
+                  style={styles.categoryOverlay}
+                >
                   <ThemedText style={styles.categoryName}>{category.name}</ThemedText>
-                </View>
+                  <IconSymbol name="arrow.right.circle.fill" size={24} color="#fff" />
+                </LinearGradient>
               </ImageBackground>
             </TouchableOpacity>
           ))}
         </View>
       </View>
 
-      {/* Motivational Section */}
-      <View style={[styles.section, styles.motivationSection]}>
-        <IconSymbol name="star.fill" size={32} color="#FFC107" />
+      {/* Enhanced Motivational Section */}
+      <LinearGradient
+        colors={['#FFF3E0', '#FFE0B2']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={[styles.section, styles.motivationSection]}
+      >
+        <View style={styles.motivationIconContainer}>
+          <IconSymbol name="star.fill" size={40} color="#FFC107" />
+        </View>
         <ThemedText type="subtitle" style={styles.motivationTitle}>
           Start Your Fitness Journey Today
         </ThemedText>
@@ -256,11 +338,12 @@ export default function HomeScreen() {
         <TouchableOpacity 
           style={styles.exploreButton}
           onPress={() => router.push('/explore')}
+          activeOpacity={0.8}
         >
           <ThemedText style={styles.exploreButtonText}>Explore All Workouts</ThemedText>
           <IconSymbol name="arrow.right" size={20} color="#fff" />
         </TouchableOpacity>
-      </View>
+      </LinearGradient>
     </ScrollView>
   );
 }
@@ -268,210 +351,448 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#FAFAFA',
   },
   contentContainer: {
-    paddingBottom: 20,
+    paddingBottom: 30,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#FAFAFA',
+  },
+  headerGradient: {
+    paddingTop: Platform.OS === 'ios' ? 50 : 20,
+    paddingBottom: 24,
+    marginBottom: 20,
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.15,
+        shadowRadius: 12,
+      },
+      android: {
+        elevation: 8,
+      },
+      web: {
+        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+      },
+    }),
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 16,
+    paddingHorizontal: 24,
+  },
+  headerTextContainer: {
+    flex: 1,
   },
   dateText: {
     fontSize: 14,
-    opacity: 0.6,
-    marginBottom: 4,
+    color: '#fff',
+    opacity: 0.9,
+    marginBottom: 6,
+    fontWeight: '500',
   },
   welcomeTitle: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: 'bold',
+    color: '#fff',
+    marginBottom: 4,
+  },
+  subTitle: {
+    fontSize: 15,
+    color: '#fff',
+    opacity: 0.95,
+    fontWeight: '500',
   },
   profileButton: {
-    width: 40,
-    height: 40,
+    width: 50,
+    height: 50,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  profileIconContainer: {
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 25,
+    padding: 5,
   },
   statsContainer: {
     flexDirection: 'row',
-    paddingHorizontal: 20,
+    paddingHorizontal: 24,
     gap: 12,
-    marginBottom: 24,
+    marginBottom: 28,
   },
   statCard: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
-    borderRadius: 16,
-    padding: 16,
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    padding: 18,
     alignItems: 'center',
-    gap: 8,
+    gap: 10,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.08,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 4,
+      },
+      web: {
+        boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+      },
+    }),
   },
-  statNumber: {
-    fontSize: 24,
-    fontWeight: 'bold',
+  statCardOrange: {
+    borderTopWidth: 3,
+    borderTopColor: '#FF5722',
   },
-  statLabel: {
-    fontSize: 12,
-    opacity: 0.6,
+  statCardGreen: {
+    borderTopWidth: 3,
+    borderTopColor: '#4CAF50',
   },
-  section: {
-    paddingHorizontal: 20,
-    marginBottom: 24,
+  statCardYellow: {
+    borderTopWidth: 3,
+    borderTopColor: '#FFC107',
   },
-  guidesContainer: {
-    paddingRight: 20,
-    gap: 12,
-  },
-  guideCard: {
-    width: 200,
-    padding: 16,
-    borderRadius: 16,
-    marginRight: 12,
-  },
-  guideIconContainer: {
+  statIconContainer: {
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: 'rgba(255, 255, 255, 0.7)',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 4,
+  },
+  statNumber: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#1A1A1A',
+  },
+  statLabel: {
+    fontSize: 13,
+    opacity: 0.7,
+    fontWeight: '600',
+    color: '#666',
+  },
+  section: {
+    paddingHorizontal: 24,
+    marginBottom: 28,
+  },
+  guidesContainer: {
+    paddingRight: 24,
+    gap: 14,
+  },
+  guideCard: {
+    width: 220,
+    borderRadius: 20,
+    marginRight: 14,
+    overflow: 'hidden',
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.1,
+        shadowRadius: 10,
+      },
+      android: {
+        elevation: 6,
+      },
+      web: {
+        boxShadow: '0 3px 10px rgba(0,0,0,0.1)',
+      },
+    }),
+  },
+  guideCardContent: {
+    padding: 20,
+  },
+  guideIconContainer: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 14,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 3,
+      },
+      web: {
+        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+      },
+    }),
   },
   guideTitle: {
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '700',
-    marginBottom: 6,
+    marginBottom: 8,
+    color: '#1A1A1A',
   },
   guideDescription: {
     fontSize: 13,
-    opacity: 0.7,
-    lineHeight: 18,
+    opacity: 0.75,
+    lineHeight: 19,
+    color: '#333',
   },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 18,
   },
   sectionTitle: {
-    fontSize: 20,
-    fontWeight: '700',
+    fontSize: 22,
+    fontWeight: '800',
+    color: '#1A1A1A',
   },
   seeAllText: {
     color: '#FF5722',
-    fontSize: 14,
-    fontWeight: '600',
+    fontSize: 15,
+    fontWeight: '700',
   },
   featuredCard: {
-    height: 220,
-    borderRadius: 16,
+    height: 260,
+    borderRadius: 24,
     overflow: 'hidden',
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.15,
+        shadowRadius: 12,
+      },
+      android: {
+        elevation: 8,
+      },
+      web: {
+        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+      },
+    }),
   },
   featuredImage: {
     flex: 1,
     justifyContent: 'flex-end',
   },
   featuredOverlay: {
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    padding: 20,
+    padding: 24,
+    paddingTop: 80,
+  },
+  featuredBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 193, 7, 0.2)',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+    alignSelf: 'flex-start',
+    marginBottom: 12,
+    gap: 6,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 193, 7, 0.3)',
+  },
+  featuredBadgeText: {
+    color: '#FFC107',
+    fontSize: 11,
+    fontWeight: '800',
+    letterSpacing: 0.5,
   },
   featuredTitle: {
     color: '#fff',
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 12,
+    fontSize: 26,
+    fontWeight: '800',
+    marginBottom: 14,
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 4,
   },
   featuredMeta: {
     flexDirection: 'row',
-    gap: 16,
-    marginBottom: 16,
+    gap: 20,
+    marginBottom: 18,
   },
   featuredMetaItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: 8,
+  },
+  metaIconContainer: {
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    padding: 6,
+    borderRadius: 10,
   },
   featuredMetaText: {
     color: '#fff',
-    fontSize: 14,
-    fontWeight: '500',
+    fontSize: 15,
+    fontWeight: '600',
+    textTransform: 'capitalize',
   },
   startButton: {
     flexDirection: 'row',
     backgroundColor: '#FF5722',
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 24,
+    paddingVertical: 14,
+    paddingHorizontal: 28,
+    borderRadius: 28,
     alignItems: 'center',
-    gap: 8,
+    gap: 10,
     alignSelf: 'flex-start',
+    ...Platform.select({
+      ios: {
+        shadowColor: '#FF5722',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 6,
+      },
+      web: {
+        boxShadow: '0 4px 12px rgba(255, 87, 34, 0.3)',
+      },
+    }),
   },
   startButtonText: {
     color: '#fff',
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   categoriesGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 12,
+    gap: 14,
   },
   categoryCard: {
     width: '48%',
-    height: 120,
-    borderRadius: 12,
+    height: 140,
+    borderRadius: 18,
     overflow: 'hidden',
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.1,
+        shadowRadius: 10,
+      },
+      android: {
+        elevation: 6,
+      },
+      web: {
+        boxShadow: '0 3px 10px rgba(0,0,0,0.1)',
+      },
+    }),
   },
   categoryImage: {
     flex: 1,
     justifyContent: 'flex-end',
   },
   categoryOverlay: {
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-    padding: 12,
+    padding: 16,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   categoryName: {
     color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 17,
+    fontWeight: '700',
+    textShadowColor: 'rgba(0, 0, 0, 0.5)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
   },
   motivationSection: {
-    backgroundColor: '#FFF3E0',
-    borderRadius: 16,
-    padding: 24,
+    borderRadius: 24,
+    padding: 28,
     alignItems: 'center',
-    marginHorizontal: 20,
+    marginHorizontal: 24,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.12,
+        shadowRadius: 12,
+      },
+      android: {
+        elevation: 8,
+      },
+      web: {
+        boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
+      },
+    }),
+  },
+  motivationIconContainer: {
+    backgroundColor: '#fff',
+    padding: 16,
+    borderRadius: 50,
+    marginBottom: 12,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#FFC107',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 4,
+      },
+      web: {
+        boxShadow: '0 2px 8px rgba(255, 193, 7, 0.2)',
+      },
+    }),
   },
   motivationTitle: {
     textAlign: 'center',
-    marginTop: 12,
-    marginBottom: 8,
+    marginTop: 8,
+    marginBottom: 10,
+    color: '#1A1A1A',
+    fontSize: 22,
+    fontWeight: '800',
   },
   motivationText: {
     textAlign: 'center',
-    opacity: 0.7,
-    marginBottom: 20,
+    opacity: 0.75,
+    marginBottom: 24,
+    fontSize: 15,
+    lineHeight: 22,
+    color: '#333',
+    paddingHorizontal: 12,
   },
   exploreButton: {
     flexDirection: 'row',
     backgroundColor: '#FF5722',
-    paddingVertical: 14,
-    paddingHorizontal: 32,
-    borderRadius: 24,
+    paddingVertical: 16,
+    paddingHorizontal: 36,
+    borderRadius: 28,
     alignItems: 'center',
-    gap: 8,
+    gap: 10,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#FF5722',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 6,
+      },
+      web: {
+        boxShadow: '0 4px 12px rgba(255, 87, 34, 0.3)',
+      },
+    }),
   },
   exploreButtonText: {
     color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 17,
+    fontWeight: '700',
   },
 });
