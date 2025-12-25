@@ -37,6 +37,12 @@ export default function ActiveWorkoutScreen() {
   const [isPaused, setIsPaused] = useState(false);
   const timerRef = useRef<any>(null);
 
+  // Rest Timer state
+  const [isResting, setIsResting] = useState(false);
+  const [restTimeLeft, setRestTimeLeft] = useState(60);
+  const restTimerRef = useRef<any>(null);
+  const DEFAULT_REST_TIME = 60;
+
   // Logging state: exercise_id -> SetLog[]
   const [logs, setLogs] = useState<Record<number, SetLog[]>>({});
 
@@ -48,7 +54,10 @@ export default function ActiveWorkoutScreen() {
       loadData();
     }
     startTimer();
-    return () => stopTimer();
+    return () => {
+      stopTimer();
+      stopRest();
+    };
   }, [id]);
 
   const startTimer = () => {
@@ -112,9 +121,39 @@ export default function ActiveWorkoutScreen() {
   const updateSet = (exerciseId: number, index: number, field: keyof SetLog, value: any) => {
     setLogs(prev => {
       const exerciseLogs = [...(prev[exerciseId] || [])];
+      
+      // Trigger rest timer logic
+      if (field === 'completed') {
+        if (value === true && !exerciseLogs[index].completed) {
+          startRest();
+        } else if (value === false && exerciseLogs[index].completed && isResting) {
+          stopRest();
+        }
+      }
+
       exerciseLogs[index] = { ...exerciseLogs[index], [field]: value };
       return { ...prev, [exerciseId]: exerciseLogs };
     });
+  };
+
+  const startRest = () => {
+    setIsResting(true);
+    setRestTimeLeft(DEFAULT_REST_TIME);
+    if (restTimerRef.current) clearInterval(restTimerRef.current);
+    restTimerRef.current = setInterval(() => {
+      setRestTimeLeft((prev) => {
+        if (prev <= 1) {
+          stopRest();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
+
+  const stopRest = () => {
+    setIsResting(false);
+    if (restTimerRef.current) clearInterval(restTimerRef.current);
   };
 
   const calculateProgress = () => {
@@ -131,6 +170,7 @@ export default function ActiveWorkoutScreen() {
 
   const handleFinish = async () => {
     stopTimer();
+    stopRest();
     
     // Calculate stats
     let totalVolume = 0;
@@ -308,6 +348,29 @@ export default function ActiveWorkoutScreen() {
           <ThemedText style={styles.finishButtonText}>Finish Workout</ThemedText>
         </TouchableOpacity>
       </View>
+
+      {/* Rest Timer Overlay */}
+      {isResting && (
+        <View style={styles.restOverlay}>
+          <View style={styles.restContent}>
+            <ThemedText style={styles.restTitle}>Resting</ThemedText>
+            <ThemedText style={styles.restTimer}>{formatTime(restTimeLeft)}</ThemedText>
+            
+            <View style={styles.restControls}>
+              <TouchableOpacity onPress={() => setRestTimeLeft(t => Math.max(0, t - 10))} style={styles.adjustButton}>
+                <ThemedText style={styles.adjustButtonText}>-10s</ThemedText>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => setRestTimeLeft(t => t + 10)} style={styles.adjustButton}>
+                <ThemedText style={styles.adjustButtonText}>+10s</ThemedText>
+              </TouchableOpacity>
+            </View>
+
+            <TouchableOpacity style={styles.skipButton} onPress={stopRest}>
+              <ThemedText style={styles.skipButtonText}>Skip Rest</ThemedText>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
     </ThemedView>
   );
 }
@@ -510,5 +573,63 @@ const styles = StyleSheet.create({
   progressBarFill: {
     height: '100%',
     backgroundColor: '#34C759',
+  },
+  restOverlay: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(0,0,0,0.8)',
+    padding: 20,
+    paddingBottom: 40,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    alignItems: 'center',
+    zIndex: 100,
+  },
+  restContent: {
+    width: '100%',
+    alignItems: 'center',
+  },
+  restTitle: {
+    color: 'white',
+    fontSize: 16,
+    marginBottom: 8,
+  },
+  restTimer: {
+    color: 'white',
+    fontSize: 48,
+    fontWeight: 'bold',
+    fontVariant: ['tabular-nums'],
+    marginBottom: 20,
+  },
+  restControls: {
+    flexDirection: 'row',
+    marginBottom: 20,
+    gap: 20,
+  },
+  adjustButton: {
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 20,
+  },
+  adjustButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  skipButton: {
+    backgroundColor: '#FF3B30',
+    paddingHorizontal: 32,
+    paddingVertical: 12,
+    borderRadius: 25,
+    width: '100%',
+    alignItems: 'center',
+  },
+  skipButtonText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });
