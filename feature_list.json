@@ -65,12 +65,14 @@
       "Connect vitereact frontend to backend/server.ts API endpoints"
     ],
     "priority": 2,
-    "passes": false,
+    "passes": true,
     "selected": true,
-    "status": "pending",
+    "status": "completed",
     "order": 4,
     "source": "user-added",
-    "addedAt": "2025-12-24T19:37:49.747Z"
+    "addedAt": "2025-12-24T19:37:49.747Z",
+    "lastAttemptAt": "2025-12-25T18:57:34.942Z",
+    "attempts": 1
   },
   {
     "id": "exercise-video-integration-1766605069177",
@@ -104,7 +106,9 @@
     "status": "completed",
     "order": 5,
     "source": "user-added",
-    "addedAt": "2025-12-24T19:37:49.747Z"
+    "addedAt": "2025-12-24T19:37:49.747Z",
+    "lastAttemptAt": "2025-12-25T18:57:30.393Z",
+    "completedAt": "2025-12-25T18:57:30.393Z"
   },
   {
     "id": "workout-favorites-system-1766605069177",

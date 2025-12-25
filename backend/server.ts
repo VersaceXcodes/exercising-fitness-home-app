@@ -310,6 +310,56 @@ app.get('/api/workout-categories', async (req, res) => {
   }
 });
 
+// Create workout category
+app.post('/api/workout-categories', authenticate_token, async (req, res) => {
+  try {
+    const { name, description, image_url } = req.body;
+    if (!name) return res.status(400).json({ message: 'Name is required' });
+
+    const result = await pool.query(
+      'INSERT INTO workout_categories (name, description, image_url) VALUES ($1, $2, $3) RETURNING *',
+      [name, description, image_url]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    console.error('Error creating workout category:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Update workout category
+app.put('/api/workout-categories/:id', authenticate_token, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, description, image_url } = req.body;
+    
+    const result = await pool.query(
+      'UPDATE workout_categories SET name = COALESCE($1, name), description = COALESCE($2, description), image_url = COALESCE($3, image_url) WHERE id = $4 RETURNING *',
+      [name, description, image_url, id]
+    );
+    
+    if (result.rows.length === 0) return res.status(404).json({ message: 'Category not found' });
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error('Error updating workout category:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Delete workout category
+app.delete('/api/workout-categories/:id', authenticate_token, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await pool.query('DELETE FROM workout_categories WHERE id = $1 RETURNING id', [id]);
+    
+    if (result.rows.length === 0) return res.status(404).json({ message: 'Category not found' });
+    res.json({ message: 'Category deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting workout category:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 // Get workouts (optionally filter by category_id)
 app.get('/api/workouts', async (req, res) => {
   try {
@@ -346,6 +396,132 @@ app.get('/api/workouts/:id', async (req, res) => {
     res.json(result.rows[0]);
   } catch (error) {
     console.error('Error fetching workout details:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Create workout
+app.post('/api/workouts', authenticate_token, async (req, res) => {
+  try {
+    const { category_id, title, description, duration_minutes, difficulty_level, image_url } = req.body;
+    if (!title || !category_id) return res.status(400).json({ message: 'Title and Category ID are required' });
+
+    const result = await pool.query(
+      'INSERT INTO workouts (category_id, title, description, duration_minutes, difficulty_level, image_url) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+      [category_id, title, description, duration_minutes, difficulty_level, image_url]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    console.error('Error creating workout:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Update workout
+app.put('/api/workouts/:id', authenticate_token, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { category_id, title, description, duration_minutes, difficulty_level, image_url } = req.body;
+
+    const result = await pool.query(
+      'UPDATE workouts SET category_id = COALESCE($1, category_id), title = COALESCE($2, title), description = COALESCE($3, description), duration_minutes = COALESCE($4, duration_minutes), difficulty_level = COALESCE($5, difficulty_level), image_url = COALESCE($6, image_url) WHERE id = $7 RETURNING *',
+      [category_id, title, description, duration_minutes, difficulty_level, image_url, id]
+    );
+
+    if (result.rows.length === 0) return res.status(404).json({ message: 'Workout not found' });
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error('Error updating workout:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Delete workout
+app.delete('/api/workouts/:id', authenticate_token, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await pool.query('DELETE FROM workouts WHERE id = $1 RETURNING id', [id]);
+    
+    if (result.rows.length === 0) return res.status(404).json({ message: 'Workout not found' });
+    res.json({ message: 'Workout deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting workout:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// EXERCISE ROUTES
+
+// Get all exercises
+app.get('/api/exercises', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM exercises ORDER BY name ASC');
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching exercises:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Get single exercise
+app.get('/api/exercises/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await pool.query('SELECT * FROM exercises WHERE id = $1', [id]);
+    if (result.rows.length === 0) return res.status(404).json({ message: 'Exercise not found' });
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error('Error fetching exercise:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Create exercise
+app.post('/api/exercises', authenticate_token, async (req, res) => {
+  try {
+    const { name, description, target_muscle_group, video_url } = req.body;
+    if (!name) return res.status(400).json({ message: 'Name is required' });
+
+    const result = await pool.query(
+      'INSERT INTO exercises (name, description, target_muscle_group, video_url) VALUES ($1, $2, $3, $4) RETURNING *',
+      [name, description, target_muscle_group, video_url]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    console.error('Error creating exercise:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Update exercise
+app.put('/api/exercises/:id', authenticate_token, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, description, target_muscle_group, video_url } = req.body;
+
+    const result = await pool.query(
+      'UPDATE exercises SET name = COALESCE($1, name), description = COALESCE($2, description), target_muscle_group = COALESCE($3, target_muscle_group), video_url = COALESCE($4, video_url) WHERE id = $5 RETURNING *',
+      [name, description, target_muscle_group, video_url, id]
+    );
+
+    if (result.rows.length === 0) return res.status(404).json({ message: 'Exercise not found' });
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error('Error updating exercise:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Delete exercise
+app.delete('/api/exercises/:id', authenticate_token, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await pool.query('DELETE FROM exercises WHERE id = $1 RETURNING id', [id]);
+    
+    if (result.rows.length === 0) return res.status(404).json({ message: 'Exercise not found' });
+    res.json({ message: 'Exercise deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting exercise:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
