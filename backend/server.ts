@@ -619,6 +619,31 @@ app.get('/api/workouts/:id/exercises', async (req, res) => {
   }
 });
 
+// Get exercise progression stats
+app.get('/api/stats/exercise/:id', authenticate_token, async (req, res) => {
+  try {
+    const user_id = req.user.id;
+    const exercise_id = req.params.id;
+
+    const query = `
+      SELECT 
+        wl.created_at::date as date, 
+        MAX(wle.weight_kg) as max_weight
+      FROM workout_log_entries wle
+      JOIN workout_logs wl ON wle.workout_log_id = wl.id
+      WHERE wl.user_id = $1 AND wle.exercise_id = $2
+      GROUP BY wl.created_at::date
+      ORDER BY wl.created_at::date ASC
+    `;
+
+    const result = await pool.query(query, [user_id, exercise_id]);
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching exercise stats:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 // Create a workout log
 app.post('/api/workout-logs', async (req, res) => {
   try {
