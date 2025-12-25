@@ -1,17 +1,17 @@
 # Feature Implementation
 
 ## Feature Details
-- **ID**: user-profile-management-1766605069177
-- **Title**: Create a dedicated User Profile screen for managing account details and viewing stats
-- **Category**: User Experience
+- **ID**: admin-content-dashboard-1766605069177
+- **Title**: Develop a web-based admin dashboard to manage workouts, exercises, and categories
+- **Category**: Admin
 
 ## Description
-Create a dedicated User Profile screen for managing account details and viewing stats
+Develop a web-based admin dashboard to manage workouts, exercises, and categories
 
 ## Verification Steps
-1. Create ProfileScreen in expo/app/(tabs)/profile.tsx
-2. Integrate GET /api/auth/me and PUT /api/auth/profile endpoints
-3. Display aggregated user statistics from backend/server.ts
+1. Initialize React Router in vitereact/src/App.tsx
+2. Create CRUD forms for Workouts and Exercises in vitereact/src/components
+3. Connect vitereact frontend to backend/server.ts API endpoints
 
 ## Instructions
 1. **Explore**: Review the existing codebase structure and patterns
@@ -19,10 +19,10 @@ Create a dedicated User Profile screen for managing account details and viewing 
 3. **Implement**: Write clean, production-quality code
 4. **Test**: Verify the feature works as expected
 5. **Update**: Mark feature as "passes": true in feature_list.json
-6. **Commit**: Use message "feat(User Experience): Create a dedicated User Profile screen for managing account details and viewing stats"
+6. **Commit**: Use message "feat(Admin): Develop a web-based admin dashboard to manage workouts, exercises, and categories"
 
 ## Important
-- Implement ONLY this specific feature (ID: user-profile-management-1766605069177)
+- Implement ONLY this specific feature (ID: admin-content-dashboard-1766605069177)
 - Do NOT modify features already marked as passes: true
 - Follow existing code patterns and conventions
 - Maintain backward compatibility

@@ -28,3 +28,8 @@ Server running on port 3000 and listening on 0.0.0.0
 [32m[nodemon] starting `tsx server.ts`[39m
 Server running on port 3000 and listening on 0.0.0.0
 Error: ENOENT: no such file or directory, stat '/app/backend/public/index.html'
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `tsx server.ts`[39m
+Server running on port 3000 and listening on 0.0.0.0
+Error: ENOENT: no such file or directory, stat '/app/backend/public/index.html'
+Error: ENOENT: no such file or directory, stat '/app/backend/public/index.html'
