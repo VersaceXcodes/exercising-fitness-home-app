@@ -71,8 +71,9 @@
     "order": 4,
     "source": "user-added",
     "addedAt": "2025-12-24T19:37:49.747Z",
-    "lastAttemptAt": "2025-12-25T18:57:34.942Z",
-    "attempts": 1
+    "lastAttemptAt": "2025-12-25T19:06:38.103Z",
+    "attempts": 1,
+    "completedAt": "2025-12-25T19:06:38.103Z"
   },
   {
     "id": "exercise-video-integration-1766605069177",
@@ -86,10 +87,12 @@
     "priority": 2,
     "passes": false,
     "selected": true,
-    "status": "pending",
+    "status": "in_progress",
     "order": 6,
     "source": "user-added",
-    "addedAt": "2025-12-24T19:37:49.747Z"
+    "addedAt": "2025-12-24T19:37:49.747Z",
+    "lastAttemptAt": "2025-12-25T19:06:41.297Z",
+    "attempts": 1
   },
   {
     "id": "user-profile-management-1766605069177",

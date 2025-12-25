@@ -1,17 +1,17 @@
 # Feature Implementation
 
 ## Feature Details
-- **ID**: admin-content-dashboard-1766605069177
-- **Title**: Develop a web-based admin dashboard to manage workouts, exercises, and categories
-- **Category**: Admin
+- **ID**: exercise-video-integration-1766605069177
+- **Title**: Embed video playback for exercises within the active workout screen
+- **Category**: User Experience
 
 ## Description
-Develop a web-based admin dashboard to manage workouts, exercises, and categories
+Embed video playback for exercises within the active workout screen
 
 ## Verification Steps
-1. Initialize React Router in vitereact/src/App.tsx
-2. Create CRUD forms for Workouts and Exercises in vitereact/src/components
-3. Connect vitereact frontend to backend/server.ts API endpoints
+1. Install expo-av or similar video package in expo/
+2. Update ActiveWorkoutScreen in expo/app/workout/[id].tsx to render video player
+3. Bind video_url from the 'exercises' table to the player component
 
 ## Instructions
 1. **Explore**: Review the existing codebase structure and patterns
@@ -19,10 +19,10 @@ Develop a web-based admin dashboard to manage workouts, exercises, and categorie
 3. **Implement**: Write clean, production-quality code
 4. **Test**: Verify the feature works as expected
 5. **Update**: Mark feature as "passes": true in feature_list.json
-6. **Commit**: Use message "feat(Admin): Develop a web-based admin dashboard to manage workouts, exercises, and categories"
+6. **Commit**: Use message "feat(User Experience): Embed video playback for exercises within the active workout screen"
 
 ## Important
-- Implement ONLY this specific feature (ID: admin-content-dashboard-1766605069177)
+- Implement ONLY this specific feature (ID: exercise-video-integration-1766605069177)
 - Do NOT modify features already marked as passes: true
 - Follow existing code patterns and conventions
 - Maintain backward compatibility
