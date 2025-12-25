@@ -148,9 +148,9 @@
     "order": 8,
     "source": "user-added",
     "addedAt": "2025-12-24T19:37:49.747Z",
-    "lastAttemptAt": "2025-12-25T19:10:34.609Z",
+    "lastAttemptAt": "2025-12-25T19:12:46.498Z",
     "attempts": 1,
-    "completedAt": "2025-12-25T19:15:00.000Z"
+    "completedAt": "2025-12-25T19:12:46.498Z"
   },
   {
     "id": "workout-search-and-filter-1766605069177",
@@ -162,12 +162,14 @@
       "Update apiService.getWorkouts in expo/services/api.ts to pass new params"
     ],
     "priority": 2,
-    "passes": false,
+    "passes": true,
     "selected": true,
-    "status": "pending",
+    "status": "completed",
     "order": 9,
     "source": "user-added",
-    "addedAt": "2025-12-24T19:37:49.747Z"
+    "addedAt": "2025-12-24T19:37:49.747Z",
+    "lastAttemptAt": "2025-12-25T19:12:49.541Z",
+    "attempts": 1
   },
   {
     "id": "weight-progression-charts-1766605069177",

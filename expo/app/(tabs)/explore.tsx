@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, View, ImageBackground } from 'react-native';
+import { StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, View, ImageBackground, TextInput } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Image } from 'expo-image';
 
@@ -32,6 +32,8 @@ export default function WorkoutsScreen() {
   
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [selectedWorkout, setSelectedWorkout] = useState<Workout | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedDifficulty, setSelectedDifficulty] = useState<string | null>(null);
   
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -41,12 +43,16 @@ export default function WorkoutsScreen() {
     loadCategories();
   }, []);
 
-  // Load Workouts when category is selected
+  // Load Workouts when category, search, or difficulty changes
   useEffect(() => {
-    if (selectedCategory) {
-      loadWorkouts(selectedCategory.id);
+    if (selectedCategory || searchQuery || selectedDifficulty) {
+      loadWorkouts({ 
+        categoryId: selectedCategory?.id, 
+        search: searchQuery, 
+        difficulty: selectedDifficulty || undefined 
+      });
     }
-  }, [selectedCategory]);
+  }, [selectedCategory, searchQuery, selectedDifficulty]);
 
   const loadCategories = async () => {
     try {
@@ -70,11 +76,11 @@ export default function WorkoutsScreen() {
     }
   };
 
-  const loadWorkouts = async (categoryId: number) => {
+  const loadWorkouts = async (params: { categoryId?: number; search?: string; difficulty?: string } = {}) => {
     try {
       setLoading(true);
       setError(null);
-      const response = await apiService.getWorkouts(categoryId);
+      const response = await apiService.getWorkouts(params);
       if (Array.isArray(response)) {
         setWorkouts(response);
       } else if (response.data && Array.isArray(response.data)) {
@@ -93,8 +99,10 @@ export default function WorkoutsScreen() {
   const handleBack = () => {
     if (selectedWorkout) {
       setSelectedWorkout(null);
-    } else if (selectedCategory) {
+    } else if (selectedCategory || searchQuery || selectedDifficulty) {
       setSelectedCategory(null);
+      setSearchQuery('');
+      setSelectedDifficulty(null);
       setWorkouts([]);
     }
   };
@@ -159,28 +167,69 @@ export default function WorkoutsScreen() {
     );
   }
 
-  // RENDER: Workouts List (Category Selected)
-  if (selectedCategory) {
-    return (
-      <ThemedView style={styles.container}>
-        <ScrollView>
+  const isSearching = searchQuery.length > 0 || selectedDifficulty !== null;
+  const showWorkoutsList = selectedCategory || isSearching;
+
+  return (
+    <ThemedView style={styles.container}>
+      <ScrollView>
+        {showWorkoutsList ? (
           <Image
-            source={{ uri: selectedCategory.image_url }}
+            source={{ uri: selectedCategory?.image_url || 'https://placehold.co/600x400/png?text=Search+Results' }}
             style={styles.headerImage}
             contentFit="cover"
           />
-          <ThemedView style={styles.content}>
+        ) : (
+          <View style={styles.headerIconContainer}>
+            <IconSymbol
+              size={200}
+              color="#808080"
+              name="figure.run"
+            />
+          </View>
+        )}
+        <ThemedView style={styles.content}>
+          {showWorkoutsList && (
             <TouchableOpacity style={styles.backButton} onPress={handleBack}>
               <IconSymbol name="arrow.left" size={24} color="#007AFF" />
-              <ThemedText style={styles.backButtonText}>All Categories</ThemedText>
+              <ThemedText style={styles.backButtonText}>
+                {selectedCategory ? "All Categories" : "Back to Categories"}
+              </ThemedText>
             </TouchableOpacity>
+          )}
 
-            <ThemedView style={styles.titleContainer}>
-              <ThemedText type="title">{selectedCategory.name}</ThemedText>
-              <ThemedText style={styles.subtitle}>{selectedCategory.description}</ThemedText>
-            </ThemedView>
+          <ThemedView style={styles.titleContainer}>
+            <ThemedText type="title">
+              {selectedCategory ? selectedCategory.name : (isSearching ? "Search Results" : "Workout Library")}
+            </ThemedText>
+            <ThemedText style={styles.subtitle}>
+              {selectedCategory ? selectedCategory.description : (isSearching ? "Workouts matching your criteria" : "Choose a category to start training")}
+            </ThemedText>
+          </ThemedView>
 
-            {loading ? (
+          <TextInput
+            style={styles.searchBar}
+            placeholder="Search workouts..."
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipsContainer}>
+            {['Beginner', 'Intermediate', 'Advanced', 'All Levels'].map((level) => (
+              <TouchableOpacity
+                key={level}
+                style={[styles.chip, selectedDifficulty === level && styles.chipSelected]}
+                onPress={() => setSelectedDifficulty(selectedDifficulty === level ? null : level)}
+              >
+                <ThemedText style={[styles.chipText, selectedDifficulty === level && styles.chipTextSelected]}>
+                  {level}
+                </ThemedText>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+
+          {showWorkoutsList ? (
+            loading ? (
                <ActivityIndicator size="large" color="#007AFF" style={{ marginTop: 20 }} />
             ) : (
               <ThemedView style={styles.listContainer}>
@@ -201,52 +250,31 @@ export default function WorkoutsScreen() {
                   </TouchableOpacity>
                 ))}
                 {workouts.length === 0 && (
-                  <ThemedText style={styles.emptyText}>No workouts found in this category.</ThemedText>
+                  <ThemedText style={styles.emptyText}>No workouts found.</ThemedText>
                 )}
               </ThemedView>
-            )}
-          </ThemedView>
-        </ScrollView>
-      </ThemedView>
-    );
-  }
-
-  // RENDER: Categories List
-  return (
-    <ThemedView style={styles.container}>
-      <ScrollView>
-        <View style={styles.headerIconContainer}>
-          <IconSymbol
-            size={200}
-            color="#808080"
-            name="figure.run"
-          />
-        </View>
-        <ThemedView style={styles.content}>
-          <ThemedView style={styles.titleContainer}>
-            <ThemedText type="title">Workout Library</ThemedText>
-            <ThemedText style={styles.subtitle}>Choose a category to start training</ThemedText>
-          </ThemedView>
-
-          <ThemedView style={styles.gridContainer}>
-            {categories.map((category) => (
-              <TouchableOpacity 
-                key={category.id} 
-                style={styles.categoryCard}
-                onPress={() => setSelectedCategory(category)}
-              >
-                <ImageBackground 
-                  source={{ uri: category.image_url }} 
-                  style={styles.categoryBackground}
-                  imageStyle={{ borderRadius: 12 }}
+            )
+          ) : (
+            <ThemedView style={styles.gridContainer}>
+              {categories.map((category) => (
+                <TouchableOpacity 
+                  key={category.id} 
+                  style={styles.categoryCard}
+                  onPress={() => setSelectedCategory(category)}
                 >
-                  <View style={styles.categoryOverlay}>
-                    <ThemedText type="title" style={styles.categoryTitle}>{category.name}</ThemedText>
-                  </View>
-                </ImageBackground>
-              </TouchableOpacity>
-            ))}
-          </ThemedView>
+                  <ImageBackground 
+                    source={{ uri: category.image_url }} 
+                    style={styles.categoryBackground}
+                    imageStyle={{ borderRadius: 12 }}
+                  >
+                    <View style={styles.categoryOverlay}>
+                      <ThemedText type="title" style={styles.categoryTitle}>{category.name}</ThemedText>
+                    </View>
+                  </ImageBackground>
+                </TouchableOpacity>
+              ))}
+            </ThemedView>
+          )}
         </ThemedView>
       </ScrollView>
     </ThemedView>
@@ -386,5 +414,33 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#666',
     marginTop: 20,
+  },
+  searchBar: {
+    backgroundColor: '#f0f0f0',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 16,
+    fontSize: 16,
+  },
+  chipsContainer: {
+    flexDirection: 'row',
+    marginBottom: 16,
+  },
+  chip: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: '#f0f0f0',
+    marginRight: 8,
+  },
+  chipSelected: {
+    backgroundColor: '#007AFF',
+  },
+  chipText: {
+    color: '#666',
+    fontWeight: '500',
+  },
+  chipTextSelected: {
+    color: 'white',
   }
 });

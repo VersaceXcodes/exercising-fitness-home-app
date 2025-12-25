@@ -1,17 +1,17 @@
 # Feature Implementation
 
 ## Feature Details
-- **ID**: inter-set-rest-timer-1766605069177
-- **Title**: Add an automatic rest timer that triggers between workout sets
-- **Category**: User Experience
+- **ID**: workout-search-and-filter-1766605069177
+- **Title**: Add search by text and filtering by difficulty to the workout explorer
+- **Category**: Integration
 
 ## Description
-Add an automatic rest timer that triggers between workout sets
+Add search by text and filtering by difficulty to the workout explorer
 
 ## Verification Steps
-1. Modify ActiveWorkoutScreen in expo/app/workout/[id].tsx
-2. Add state for 'rest' mode vs 'active' mode
-3. Trigger countdown overlay when a set is marked as completed
+1. Update GET /api/workouts in backend/server.ts to accept search and difficulty query params
+2. Add SearchBar and Filter chips UI to expo/app/(tabs)/explore.tsx
+3. Update apiService.getWorkouts in expo/services/api.ts to pass new params
 
 ## Instructions
 1. **Explore**: Review the existing codebase structure and patterns
@@ -19,10 +19,10 @@ Add an automatic rest timer that triggers between workout sets
 3. **Implement**: Write clean, production-quality code
 4. **Test**: Verify the feature works as expected
 5. **Update**: Mark feature as "passes": true in feature_list.json
-6. **Commit**: Use message "feat(User Experience): Add an automatic rest timer that triggers between workout sets"
+6. **Commit**: Use message "feat(Integration): Add search by text and filtering by difficulty to the workout explorer"
 
 ## Important
-- Implement ONLY this specific feature (ID: inter-set-rest-timer-1766605069177)
+- Implement ONLY this specific feature (ID: workout-search-and-filter-1766605069177)
 - Do NOT modify features already marked as passes: true
 - Follow existing code patterns and conventions
 - Maintain backward compatibility

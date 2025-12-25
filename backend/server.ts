@@ -360,16 +360,31 @@ app.delete('/api/workout-categories/:id', authenticate_token, async (req, res) =
   }
 });
 
-// Get workouts (optionally filter by category_id)
+// Get workouts (optionally filter by category_id, search, difficulty)
 app.get('/api/workouts', async (req, res) => {
   try {
-    const { category_id } = req.query;
+    const { category_id, search, difficulty } = req.query;
     let query = 'SELECT * FROM workouts';
     const params = [];
+    const conditions = [];
 
     if (category_id) {
-      query += ' WHERE category_id = $1';
       params.push(category_id);
+      conditions.push(`category_id = $${params.length}`);
+    }
+
+    if (search) {
+      params.push(`%${search}%`);
+      conditions.push(`title ILIKE $${params.length}`);
+    }
+
+    if (difficulty) {
+      params.push(difficulty);
+      conditions.push(`difficulty_level = $${params.length}`);
+    }
+
+    if (conditions.length > 0) {
+      query += ' WHERE ' + conditions.join(' AND ');
     }
     
     query += ' ORDER BY title ASC';

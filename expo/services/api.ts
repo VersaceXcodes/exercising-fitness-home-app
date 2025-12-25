@@ -243,9 +243,18 @@ class ApiService {
   }
 
 
-  async getWorkouts(categoryId?: number) {
-    const query = categoryId ? `?category_id=${categoryId}` : '';
-    return this.request(`/api/workouts${query}`);
+  async getWorkouts(params?: number | { categoryId?: number; search?: string; difficulty?: string }) {
+    const queryParams = new URLSearchParams();
+    
+    if (typeof params === 'number') {
+      queryParams.append('category_id', params.toString());
+    } else if (params) {
+      if (params.categoryId) queryParams.append('category_id', params.categoryId.toString());
+      if (params.search) queryParams.append('search', params.search);
+      if (params.difficulty) queryParams.append('difficulty', params.difficulty);
+    }
+    
+    return this.request(`/api/workouts?${queryParams.toString()}`);
   }
 
   async getWorkout(workoutId: number | string) {
