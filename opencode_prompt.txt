@@ -1,17 +1,17 @@
 # Feature Implementation
 
 ## Feature Details
-- **ID**: weight-progression-charts-1766605069177
-- **Title**: Visualize strength progress with charts showing weight lifted over time
-- **Category**: Data
+- **ID**: social-share-summary-1766605069177
+- **Title**: Enable sharing of workout summary stats to social media platforms
+- **Category**: Integration
 
 ## Description
-Visualize strength progress with charts showing weight lifted over time
+Enable sharing of workout summary stats to social media platforms
 
 ## Verification Steps
-1. Add GET /api/stats/exercise/:id endpoint to backend/server.ts
-2. Install react-native-chart-kit in expo/
-3. Create ProgressionChart component in expo/components/ui
+1. Install expo-sharing and expo-view-shot in expo/
+2. Create a shareable view layout in ActiveWorkoutScreen (summary mode)
+3. Implement capture and share logic in handleFinish function
 
 ## Instructions
 1. **Explore**: Review the existing codebase structure and patterns
@@ -19,10 +19,10 @@ Visualize strength progress with charts showing weight lifted over time
 3. **Implement**: Write clean, production-quality code
 4. **Test**: Verify the feature works as expected
 5. **Update**: Mark feature as "passes": true in feature_list.json
-6. **Commit**: Use message "feat(Data): Visualize strength progress with charts showing weight lifted over time"
+6. **Commit**: Use message "feat(Integration): Enable sharing of workout summary stats to social media platforms"
 
 ## Important
-- Implement ONLY this specific feature (ID: weight-progression-charts-1766605069177)
+- Implement ONLY this specific feature (ID: social-share-summary-1766605069177)
 - Do NOT modify features already marked as passes: true
 - Follow existing code patterns and conventions
 - Maintain backward compatibility
