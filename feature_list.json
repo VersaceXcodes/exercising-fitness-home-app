@@ -70,23 +70,6 @@
     "addedAt": "2025-12-24T19:37:49.747Z"
   },
   {
-    "id": "user-profile-management-1766605069177",
-    "category": "User Experience",
-    "description": "Create a dedicated User Profile screen for managing account details and viewing stats",
-    "steps": [
-      "Create ProfileScreen in expo/app/(tabs)/profile.tsx",
-      "Integrate GET /api/auth/me and PUT /api/auth/profile endpoints",
-      "Display aggregated user statistics from backend/server.ts"
-    ],
-    "priority": 1,
-    "passes": false,
-    "selected": true,
-    "status": "pending",
-    "order": 5,
-    "source": "user-added",
-    "addedAt": "2025-12-24T19:37:49.747Z"
-  },
-  {
     "id": "exercise-video-integration-1766605069177",
     "category": "User Experience",
     "description": "Embed video playback for exercises within the active workout screen",
@@ -100,6 +83,23 @@
     "selected": true,
     "status": "pending",
     "order": 6,
+    "source": "user-added",
+    "addedAt": "2025-12-24T19:37:49.747Z"
+  },
+  {
+    "id": "user-profile-management-1766605069177",
+    "category": "User Experience",
+    "description": "Create a dedicated User Profile screen for managing account details and viewing stats",
+    "steps": [
+      "Create ProfileScreen in expo/app/(tabs)/profile.tsx",
+      "Integrate GET /api/auth/me and PUT /api/auth/profile endpoints",
+      "Display aggregated user statistics from backend/server.ts"
+    ],
+    "priority": 1,
+    "passes": false,
+    "selected": true,
+    "status": "pending",
+    "order": 5,
     "source": "user-added",
     "addedAt": "2025-12-24T19:37:49.747Z"
   },
