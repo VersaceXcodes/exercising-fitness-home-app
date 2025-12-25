@@ -297,6 +297,64 @@ app.get('/api/user/stats', authenticate_token, async (req, res) => {
   }
 });
 
+// FAVORITES ROUTES
+
+// Get user favorites
+app.get('/api/favorites', authenticate_token, async (req, res) => {
+  try {
+    const user_id = req.user.id;
+    const result = await pool.query(
+      `SELECT w.* FROM workouts w
+       JOIN user_favorites uf ON w.id = uf.workout_id
+       WHERE uf.user_id = $1
+       ORDER BY uf.created_at DESC`,
+      [user_id]
+    );
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching favorites:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Add favorite
+app.post('/api/favorites', authenticate_token, async (req, res) => {
+  try {
+    const user_id = req.user.id;
+    const { workout_id } = req.body;
+    
+    if (!workout_id) return res.status(400).json({ message: 'Workout ID is required' });
+
+    await pool.query(
+      'INSERT INTO user_favorites (user_id, workout_id) VALUES ($1, $2) ON CONFLICT DO NOTHING',
+      [user_id, workout_id]
+    );
+    
+    res.status(201).json({ message: 'Added to favorites' });
+  } catch (error) {
+    console.error('Error adding favorite:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Remove favorite
+app.delete('/api/favorites/:workout_id', authenticate_token, async (req, res) => {
+  try {
+    const user_id = req.user.id;
+    const { workout_id } = req.params;
+
+    await pool.query(
+      'DELETE FROM user_favorites WHERE user_id = $1 AND workout_id = $2',
+      [user_id, workout_id]
+    );
+    
+    res.json({ message: 'Removed from favorites' });
+  } catch (error) {
+    console.error('Error removing favorite:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 // WORKOUT ROUTES
 
 // Get all workout categories

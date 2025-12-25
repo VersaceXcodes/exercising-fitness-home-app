@@ -238,6 +238,24 @@ class ApiService {
     });
   }
 
+  // Favorites
+  async getFavorites() {
+    return this.request('/api/favorites');
+  }
+
+  async addFavorite(workoutId: number) {
+    return this.request('/api/favorites', {
+      method: 'POST',
+      body: JSON.stringify({ workout_id: workoutId }),
+    });
+  }
+
+  async removeFavorite(workoutId: number) {
+    return this.request(`/api/favorites/${workoutId}`, {
+      method: 'DELETE',
+    });
+  }
+
   // Workouts
   async getWorkoutCategories() {
     const response = await this.request('/api/workout-categories');

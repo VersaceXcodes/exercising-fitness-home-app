@@ -125,12 +125,14 @@
       "Add heart icon toggle to WorkoutDetails in expo/app/(tabs)/explore.tsx"
     ],
     "priority": 3,
-    "passes": false,
+    "passes": true,
     "selected": true,
-    "status": "pending",
+    "status": "completed",
     "order": 7,
     "source": "user-added",
-    "addedAt": "2025-12-24T19:37:49.747Z"
+    "addedAt": "2025-12-24T19:37:49.747Z",
+    "lastAttemptAt": "2025-12-25T19:22:04.552Z",
+    "attempts": 1
   },
   {
     "id": "inter-set-rest-timer-1766605069177",
@@ -205,9 +207,10 @@
     "order": 11,
     "source": "user-added",
     "addedAt": "2025-12-24T19:37:49.747Z",
-    "lastAttemptAt": "2025-12-25T19:18:43.880Z",
+    "lastAttemptAt": "2025-12-25T19:22:01.283Z",
     "attempts": 2,
-    "errorMessage": "Agent completed but feature not marked as passed"
+    "errorMessage": "Agent completed but feature not marked as passed",
+    "completedAt": "2025-12-25T19:22:01.283Z"
   },
   {
     "id": "social-share-summary-1766605069177",

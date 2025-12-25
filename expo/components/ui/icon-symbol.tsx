@@ -23,6 +23,8 @@ const MAPPING = {
   'clock': 'access-time',
   'flame': 'local-fire-department',
   'arrow.left': 'arrow-back',
+  'heart.fill': 'favorite',
+  'heart': 'favorite-border',
 } as IconMapping;
 
 

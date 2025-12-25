@@ -112,3 +112,11 @@ INSERT INTO workout_exercises (workout_id, exercise_id, order_index, default_set
 (2, 6, 2, 3, 8),
 (2, 7, 3, 3, 10)
 ON CONFLICT DO NOTHING;
+
+CREATE TABLE IF NOT EXISTS user_favorites (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  workout_id INTEGER REFERENCES workouts(id) ON DELETE CASCADE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(user_id, workout_id)
+);

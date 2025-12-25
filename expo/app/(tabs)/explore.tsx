@@ -34,6 +34,7 @@ export default function WorkoutsScreen() {
   const [selectedWorkout, setSelectedWorkout] = useState<Workout | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDifficulty, setSelectedDifficulty] = useState<string | null>(null);
+  const [favoriteIds, setFavoriteIds] = useState<Set<number>>(new Set());
   
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -41,7 +42,42 @@ export default function WorkoutsScreen() {
   // Load Categories on mount
   useEffect(() => {
     loadCategories();
+    loadFavorites();
   }, []);
+
+  const loadFavorites = async () => {
+    try {
+      const response = await apiService.getFavorites();
+      const favorites = Array.isArray(response) ? response : (response.data || []);
+      const ids = new Set(favorites.map((w: any) => w.id));
+      setFavoriteIds(ids);
+    } catch (err) {
+      console.error('Failed to load favorites:', err);
+    }
+  };
+
+  const toggleFavorite = async (workout: Workout) => {
+    try {
+      const isFav = favoriteIds.has(workout.id);
+      if (isFav) {
+        await apiService.removeFavorite(workout.id);
+        setFavoriteIds(prev => {
+          const next = new Set(prev);
+          next.delete(workout.id);
+          return next;
+        });
+      } else {
+        await apiService.addFavorite(workout.id);
+        setFavoriteIds(prev => {
+          const next = new Set(prev);
+          next.add(workout.id);
+          return next;
+        });
+      }
+    } catch (err) {
+      console.error('Failed to toggle favorite:', err);
+    }
+  };
 
   // Load Workouts when category, search, or difficulty changes
   useEffect(() => {
@@ -127,11 +163,23 @@ export default function WorkoutsScreen() {
     return (
       <ThemedView style={styles.container}>
         <ScrollView>
-          <Image
-            source={{ uri: selectedWorkout.image_url }}
-            style={styles.headerImage}
-            contentFit="cover"
-          />
+          <View>
+            <Image
+              source={{ uri: selectedWorkout.image_url }}
+              style={styles.headerImage}
+              contentFit="cover"
+            />
+            <TouchableOpacity 
+              style={styles.favoriteButton}
+              onPress={() => toggleFavorite(selectedWorkout)}
+            >
+              <IconSymbol 
+                name={favoriteIds.has(selectedWorkout.id) ? "heart.fill" : "heart"} 
+                size={28} 
+                color={favoriteIds.has(selectedWorkout.id) ? "#FF3B30" : "white"} 
+              />
+            </TouchableOpacity>
+          </View>
           <ThemedView style={styles.content}>
             <TouchableOpacity style={styles.backButton} onPress={handleBack}>
               <IconSymbol name="arrow.left" size={24} color="#007AFF" />
@@ -293,6 +341,16 @@ const styles = StyleSheet.create({
   headerImage: {
     width: '100%',
     height: 250,
+  },
+  favoriteButton: {
+    position: 'absolute',
+    top: 40,
+    right: 20,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    borderRadius: 20,
+    padding: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   headerIconContainer: {
     width: '100%',
