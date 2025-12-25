@@ -251,6 +251,10 @@ class ApiService {
       body: JSON.stringify(logData),
     });
   }
+
+  async getWorkoutLogs() {
+    return this.request('/api/workout-logs');
+  }
 }
 
 export const apiService = new ApiService();

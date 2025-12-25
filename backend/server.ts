@@ -384,6 +384,25 @@ app.post('/api/workout-logs', async (req, res) => {
 
 
 
+// Get workout logs for user
+app.get('/api/workout-logs', authenticate_token, async (req, res) => {
+  try {
+    const user_id = req.user.id;
+    const query = `
+      SELECT wl.*, w.title as workout_title, w.image_url as workout_image_url
+      FROM workout_logs wl
+      JOIN workouts w ON wl.workout_id = w.id
+      WHERE wl.user_id = $1
+      ORDER BY wl.created_at DESC
+    `;
+    const result = await pool.query(query, [user_id]);
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching workout logs:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 // Example protected endpoint
 app.get('/api/protected', authenticate_token, (req, res) => {
   res.json({
