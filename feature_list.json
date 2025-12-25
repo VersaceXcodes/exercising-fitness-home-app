@@ -99,14 +99,12 @@
       "Display aggregated user statistics from backend/server.ts"
     ],
     "priority": 1,
-    "passes": false,
+    "passes": true,
     "selected": true,
-    "status": "in_progress",
+    "status": "completed",
     "order": 5,
     "source": "user-added",
-    "addedAt": "2025-12-24T19:37:49.747Z",
-    "lastAttemptAt": "2025-12-25T18:50:59.331Z",
-    "attempts": 1
+    "addedAt": "2025-12-24T19:37:49.747Z"
   },
   {
     "id": "workout-favorites-system-1766605069177",

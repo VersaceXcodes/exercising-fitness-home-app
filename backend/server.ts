@@ -11,6 +11,8 @@ import bcrypt from 'bcryptjs';
 
 dotenv.config();
 
+const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret';
+
 const { DATABASE_URL, PGHOST, PGDATABASE, PGUSER, PGPASSWORD, PGPORT = 5432 } = process.env;
 
 const pool = new Pool(
@@ -257,6 +259,44 @@ app.put('/api/auth/profile', authenticate_token, async (req, res) => {
   }
 });
 
+// Get user stats endpoint
+app.get('/api/user/stats', authenticate_token, async (req, res) => {
+  try {
+    const user_id = req.user.id;
+
+    // Total workouts
+    const totalWorkoutsResult = await pool.query(
+      'SELECT COUNT(*) FROM workout_logs WHERE user_id = $1',
+      [user_id]
+    );
+    const totalWorkouts = parseInt(totalWorkoutsResult.rows[0].count);
+
+    // Total duration
+    const totalDurationResult = await pool.query(
+      'SELECT SUM(total_duration_seconds) FROM workout_logs WHERE user_id = $1',
+      [user_id]
+    );
+    const totalDurationSeconds = parseInt(totalDurationResult.rows[0].sum) || 0;
+    const totalDurationMinutes = Math.round(totalDurationSeconds / 60);
+
+    // Workouts this week
+    const workoutsThisWeekResult = await pool.query(
+      "SELECT COUNT(*) FROM workout_logs WHERE user_id = $1 AND created_at >= date_trunc('week', CURRENT_DATE)",
+      [user_id]
+    );
+    const workoutsThisWeek = parseInt(workoutsThisWeekResult.rows[0].count);
+
+    res.json({
+      totalWorkouts,
+      totalDurationMinutes,
+      workoutsThisWeek
+    });
+  } catch (error) {
+    console.error('Error fetching user stats:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 // WORKOUT ROUTES
 
 // Get all workout categories
@@ -427,7 +467,9 @@ app.get('*', (req, res) => {
 
 export { app, pool };
 
-// Start the server
-app.listen(3000, '0.0.0.0', () => {
-  console.log(`Server running on port 3000 and listening on 0.0.0.0`);
-});
+// Start the server only if run directly
+if (process.argv[1] === __filename) {
+  app.listen(3000, '0.0.0.0', () => {
+    console.log(`Server running on port 3000 and listening on 0.0.0.0`);
+  });
+}

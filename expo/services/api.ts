@@ -79,6 +79,22 @@ class ApiService {
     return this.request('/api/auth/verify');
   }
 
+  // Profile
+  async getProfile() {
+    return this.request('/api/auth/me');
+  }
+
+  async updateProfile(profileData: { name: string }) {
+    return this.request('/api/auth/profile', {
+      method: 'PUT',
+      body: JSON.stringify(profileData),
+    });
+  }
+
+  async getUserStats() {
+    return this.request('/api/user/stats');
+  }
+
   // Properties
   async getProperties(params?: {
     location?: string;

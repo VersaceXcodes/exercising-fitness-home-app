@@ -128,7 +128,10 @@ export default function HomeScreen() {
               Let's get stronger together! 💪
             </ThemedText>
           </View>
-          <TouchableOpacity style={styles.profileButton}>
+          <TouchableOpacity 
+            style={styles.profileButton}
+            onPress={() => router.push('/(tabs)/profile')}
+          >
             <View style={styles.profileIconContainer}>
               <IconSymbol name="person.circle.fill" size={40} color="#FFF" />
             </View>
