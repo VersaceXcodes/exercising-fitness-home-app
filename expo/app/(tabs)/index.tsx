@@ -95,6 +95,36 @@ export default function HomeScreen() {
       }
     } catch (error) {
       console.error('Failed to load home data:', error);
+      
+      // Fallback to cache
+      try {
+        console.log('Attempting to load from cache...');
+        const cachedCategories = await apiService.getFromCache<any>('workout_categories');
+        
+        if (cachedCategories) {
+          const categoriesData = Array.isArray(cachedCategories) 
+            ? cachedCategories 
+            : cachedCategories.data || [];
+          setCategories(categoriesData.slice(0, 4));
+          
+          if (categoriesData.length > 0) {
+            // Try to load cached workouts for the first category
+            const cacheKey = `workouts_${JSON.stringify(categoriesData[0].id)}`;
+            const cachedWorkouts = await apiService.getFromCache<any>(cacheKey);
+            
+            if (cachedWorkouts) {
+              const workoutsData = Array.isArray(cachedWorkouts) 
+                ? cachedWorkouts 
+                : cachedWorkouts.data || [];
+              if (workoutsData.length > 0) {
+                setFeaturedWorkout(workoutsData[0]);
+              }
+            }
+          }
+        }
+      } catch (cacheError) {
+        console.error('Failed to load from cache:', cacheError);
+      }
     } finally {
       setLoading(false);
     }

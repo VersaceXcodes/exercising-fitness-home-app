@@ -1,4 +1,5 @@
 import Constants from 'expo-constants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const API_BASE_URL = Constants.expoConfig?.extra?.apiUrl || 
   process.env.EXPO_PUBLIC_API_URL || 
@@ -239,7 +240,9 @@ class ApiService {
 
   // Workouts
   async getWorkoutCategories() {
-    return this.request('/api/workout-categories');
+    const response = await this.request('/api/workout-categories');
+    this.saveToCache('workout_categories', response);
+    return response;
   }
 
 
@@ -254,7 +257,13 @@ class ApiService {
       if (params.difficulty) queryParams.append('difficulty', params.difficulty);
     }
     
-    return this.request(`/api/workouts?${queryParams.toString()}`);
+    const response = await this.request(`/api/workouts?${queryParams.toString()}`);
+    
+    // Create a cache key based on params
+    const cacheKey = `workouts_${JSON.stringify(params || 'all')}`;
+    this.saveToCache(cacheKey, response);
+    
+    return response;
   }
 
   async getWorkout(workoutId: number | string) {
@@ -279,6 +288,25 @@ class ApiService {
 
   async getWorkoutLogs() {
     return this.request('/api/workout-logs');
+  }
+
+  // Caching
+  async saveToCache(key: string, data: any) {
+    try {
+      await AsyncStorage.setItem(key, JSON.stringify(data));
+    } catch (error) {
+      console.error('Failed to save to cache:', error);
+    }
+  }
+
+  async getFromCache<T>(key: string): Promise<T | null> {
+    try {
+      const data = await AsyncStorage.getItem(key);
+      return data ? JSON.parse(data) : null;
+    } catch (error) {
+      console.error('Failed to get from cache:', error);
+      return null;
+    }
   }
 }
 
