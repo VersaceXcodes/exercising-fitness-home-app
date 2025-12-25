@@ -25,6 +25,7 @@ const MAPPING = {
   'arrow.left': 'arrow-back',
   'heart.fill': 'favorite',
   'heart': 'favorite-border',
+  'square.and.arrow.up': 'share',
 } as IconMapping;
 
 

@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, ScrollView, View, TouchableOpacity, TextInput, Alert, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Video, ResizeMode } from 'expo-av';
+import * as Sharing from 'expo-sharing';
+import { captureRef } from 'react-native-view-shot';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
@@ -48,6 +50,21 @@ export default function ActiveWorkoutScreen() {
 
   const [showSummary, setShowSummary] = useState(false);
   const [stats, setStats] = useState({ duration: 0, totalVolume: 0, setsCompleted: 0, totalSets: 0 });
+
+  const viewShotRef = useRef<View>(null);
+
+  const shareSummary = async () => {
+    try {
+      const uri = await captureRef(viewShotRef, {
+        format: 'png',
+        quality: 0.8,
+      });
+      await Sharing.shareAsync(uri);
+    } catch (error) {
+      console.error('Error sharing summary:', error);
+      Alert.alert('Error', 'Failed to share summary');
+    }
+  };
 
   useEffect(() => {
     if (id) {
@@ -229,27 +246,33 @@ export default function ActiveWorkoutScreen() {
   if (showSummary) {
     return (
       <ThemedView style={styles.container}>
-        <View style={styles.summaryHeader}>
-          <ThemedText type="title">Workout Complete!</ThemedText>
-          <ThemedText style={styles.summarySubtext}>Great job!</ThemedText>
-        </View>
-        
-        <View style={styles.statsContainer}>
-          <View style={styles.statItem}>
-            <ThemedText style={styles.statValue}>{formatTime(stats.duration)}</ThemedText>
-            <ThemedText style={styles.statLabel}>Duration</ThemedText>
+        <View ref={viewShotRef} collapsable={false} style={styles.shareableContainer}>
+          <View style={styles.summaryHeader}>
+            <ThemedText type="title">Workout Complete!</ThemedText>
+            <ThemedText style={styles.summarySubtext}>Great job!</ThemedText>
           </View>
-          <View style={styles.statItem}>
-            <ThemedText style={styles.statValue}>{stats.totalVolume.toLocaleString()} kg</ThemedText>
-            <ThemedText style={styles.statLabel}>Total Volume</ThemedText>
-          </View>
-          <View style={styles.statItem}>
-            <ThemedText style={styles.statValue}>{stats.setsCompleted} / {stats.totalSets}</ThemedText>
-            <ThemedText style={styles.statLabel}>Sets</ThemedText>
+          
+          <View style={styles.statsContainer}>
+            <View style={styles.statItem}>
+              <ThemedText style={styles.statValue}>{formatTime(stats.duration)}</ThemedText>
+              <ThemedText style={styles.statLabel}>Duration</ThemedText>
+            </View>
+            <View style={styles.statItem}>
+              <ThemedText style={styles.statValue}>{stats.totalVolume.toLocaleString()} kg</ThemedText>
+              <ThemedText style={styles.statLabel}>Total Volume</ThemedText>
+            </View>
+            <View style={styles.statItem}>
+              <ThemedText style={styles.statValue}>{stats.setsCompleted} / {stats.totalSets}</ThemedText>
+              <ThemedText style={styles.statLabel}>Sets</ThemedText>
+            </View>
           </View>
         </View>
 
         <View style={styles.footer}>
+          <TouchableOpacity style={styles.shareButton} onPress={shareSummary}>
+            <IconSymbol name="square.and.arrow.up" size={20} color="white" />
+            <ThemedText style={styles.shareButtonText}>Share Summary</ThemedText>
+          </TouchableOpacity>
           <TouchableOpacity style={styles.finishButton} onPress={() => router.dismiss()}>
             <ThemedText style={styles.finishButtonText}>Close</ThemedText>
           </TouchableOpacity>
@@ -628,6 +651,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   skipButtonText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  shareableContainer: {
+    backgroundColor: '#f8f9fa',
+    paddingBottom: 20,
+  },
+  shareButton: {
+    backgroundColor: '#34C759',
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    marginBottom: 12,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  shareButtonText: {
     color: 'white',
     fontSize: 18,
     fontWeight: 'bold',

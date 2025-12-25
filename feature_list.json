@@ -191,8 +191,9 @@
     "order": 10,
     "source": "user-added",
     "addedAt": "2025-12-24T19:37:49.747Z",
-    "lastAttemptAt": "2025-12-25T19:25:31.168Z",
-    "attempts": 1
+    "lastAttemptAt": "2025-12-25T19:29:05.737Z",
+    "attempts": 1,
+    "completedAt": "2025-12-25T19:29:05.737Z"
   },
   {
     "id": "offline-data-caching-1766605069177",
@@ -225,11 +226,13 @@
       "Implement capture and share logic in handleFinish function"
     ],
     "priority": 3,
-    "passes": false,
+    "passes": true,
     "selected": true,
-    "status": "pending",
+    "status": "completed",
     "order": 12,
     "source": "user-added",
-    "addedAt": "2025-12-24T19:37:49.747Z"
+    "addedAt": "2025-12-24T19:37:49.747Z",
+    "lastAttemptAt": "2025-12-25T19:29:09.896Z",
+    "attempts": 1
   }
 ]
