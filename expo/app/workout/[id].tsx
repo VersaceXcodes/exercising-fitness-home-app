@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, ScrollView, View, TouchableOpacity, TextInput, Alert, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Video, ResizeMode } from 'expo-av';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
@@ -34,7 +35,7 @@ export default function ActiveWorkoutScreen() {
   // Timer state
   const [duration, setDuration] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<any>(null);
 
   // Logging state: exercise_id -> SetLog[]
   const [logs, setLogs] = useState<Record<number, SetLog[]>>({});
@@ -80,9 +81,9 @@ export default function ActiveWorkoutScreen() {
     try {
       setLoading(true);
       const workoutData = await apiService.getWorkout(id as string);
-      const exercisesData = await apiService.getWorkoutExercises(Number(id));
+      const exercisesData = await apiService.getWorkoutExercises(Number(id)) as any;
       
-      const list = Array.isArray(exercisesData) ? exercisesData : exercisesData.data || [];
+      const list: Exercise[] = Array.isArray(exercisesData) ? exercisesData : exercisesData.data || [];
       // Handle response structure if wrapped in data
       const workoutDetails = workoutData.data || workoutData;
 
@@ -248,6 +249,20 @@ export default function ActiveWorkoutScreen() {
             <ThemedText type="subtitle" style={styles.exerciseName}>{exercise.name}</ThemedText>
             <ThemedText style={styles.muscleGroup}>{exercise.target_muscle_group}</ThemedText>
             
+            {exercise.video_url && (
+              <View style={styles.videoContainer}>
+                <Video
+                  style={styles.video}
+                  source={{
+                    uri: exercise.video_url,
+                  }}
+                  useNativeControls
+                  resizeMode={ResizeMode.CONTAIN}
+                  isLooping
+                />
+              </View>
+            )}
+
             <View style={styles.setsHeader}>
               <ThemedText style={styles.colHeader}>Set</ThemedText>
               <ThemedText style={styles.colHeader}>kg</ThemedText>
@@ -355,6 +370,18 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 4,
     elevation: 2,
+  },
+  videoContainer: {
+    width: '100%',
+    height: 200,
+    marginBottom: 16,
+    backgroundColor: '#000',
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  video: {
+    width: '100%',
+    height: '100%',
   },
   exerciseName: {
     fontSize: 18,
