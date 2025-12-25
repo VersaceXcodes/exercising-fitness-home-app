@@ -1,17 +1,17 @@
 # Feature Implementation
 
 ## Feature Details
-- **ID**: workout-history-log-1766605069177
-- **Title**: Implement a workout history screen to view past completed workouts and logs
-- **Category**: Data
+- **ID**: user-profile-management-1766605069177
+- **Title**: Create a dedicated User Profile screen for managing account details and viewing stats
+- **Category**: User Experience
 
 ## Description
-Implement a workout history screen to view past completed workouts and logs
+Create a dedicated User Profile screen for managing account details and viewing stats
 
 ## Verification Steps
-1. Add GET /api/workout-logs endpoint to backend/server.ts filtering by user_id
-2. Create new HistoryScreen component in expo/app/(tabs)/history.tsx
-3. Add getWorkoutLogs method to expo/services/api.ts
+1. Create ProfileScreen in expo/app/(tabs)/profile.tsx
+2. Integrate GET /api/auth/me and PUT /api/auth/profile endpoints
+3. Display aggregated user statistics from backend/server.ts
 
 ## Instructions
 1. **Explore**: Review the existing codebase structure and patterns
@@ -19,10 +19,10 @@ Implement a workout history screen to view past completed workouts and logs
 3. **Implement**: Write clean, production-quality code
 4. **Test**: Verify the feature works as expected
 5. **Update**: Mark feature as "passes": true in feature_list.json
-6. **Commit**: Use message "feat(Data): Implement a workout history screen to view past completed workouts and logs"
+6. **Commit**: Use message "feat(User Experience): Create a dedicated User Profile screen for managing account details and viewing stats"
 
 ## Important
-- Implement ONLY this specific feature (ID: workout-history-log-1766605069177)
+- Implement ONLY this specific feature (ID: user-profile-management-1766605069177)
 - Do NOT modify features already marked as passes: true
 - Follow existing code patterns and conventions
 - Maintain backward compatibility

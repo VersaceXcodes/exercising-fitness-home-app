@@ -51,9 +51,9 @@
     "order": 3,
     "source": "user-added",
     "addedAt": "2025-12-24T19:37:49.747Z",
-    "lastAttemptAt": "2025-12-25T18:47:23.816Z",
+    "lastAttemptAt": "2025-12-25T18:50:55.207Z",
     "attempts": 1,
-    "completedAt": "2025-12-25T18:50:00.000Z"
+    "completedAt": "2025-12-25T18:50:55.207Z"
   },
   {
     "id": "admin-content-dashboard-1766605069177",
@@ -101,10 +101,12 @@
     "priority": 1,
     "passes": false,
     "selected": true,
-    "status": "pending",
+    "status": "in_progress",
     "order": 5,
     "source": "user-added",
-    "addedAt": "2025-12-24T19:37:49.747Z"
+    "addedAt": "2025-12-24T19:37:49.747Z",
+    "lastAttemptAt": "2025-12-25T18:50:59.331Z",
+    "attempts": 1
   },
   {
     "id": "workout-favorites-system-1766605069177",
