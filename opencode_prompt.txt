@@ -1,17 +1,17 @@
 # Feature Implementation
 
 ## Feature Details
-- **ID**: offline-data-caching-1766605069177
-- **Title**: Cache workout categories and details for offline access
-- **Category**: Performance
+- **ID**: workout-favorites-system-1766605069177
+- **Title**: Allow users to favorite/bookmark specific workouts for quick access
+- **Category**: Data
 
 ## Description
-Cache workout categories and details for offline access
+Allow users to favorite/bookmark specific workouts for quick access
 
 ## Verification Steps
-1. Install @react-native-async-storage/async-storage in expo/
-2. Implement caching layer in expo/services/api.ts
-3. Modify loadHomeData in expo/app/(tabs)/index.tsx to try cache on failure
+1. Create 'user_favorites' table in backend/db.sql
+2. Add POST/DELETE /api/favorites endpoints to backend/server.ts
+3. Add heart icon toggle to WorkoutDetails in expo/app/(tabs)/explore.tsx
 
 ## Instructions
 1. **Explore**: Review the existing codebase structure and patterns
@@ -19,10 +19,10 @@ Cache workout categories and details for offline access
 3. **Implement**: Write clean, production-quality code
 4. **Test**: Verify the feature works as expected
 5. **Update**: Mark feature as "passes": true in feature_list.json
-6. **Commit**: Use message "feat(Performance): Cache workout categories and details for offline access"
+6. **Commit**: Use message "feat(Data): Allow users to favorite/bookmark specific workouts for quick access"
 
 ## Important
-- Implement ONLY this specific feature (ID: offline-data-caching-1766605069177)
+- Implement ONLY this specific feature (ID: workout-favorites-system-1766605069177)
 - Do NOT modify features already marked as passes: true
 - Follow existing code patterns and conventions
 - Maintain backward compatibility
