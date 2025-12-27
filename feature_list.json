@@ -234,5 +234,175 @@
     "addedAt": "2025-12-24T19:37:49.747Z",
     "lastAttemptAt": "2025-12-25T19:29:09.896Z",
     "attempts": 1
+  },
+  {
+    "id": "delete-account-flow-1766872160652",
+    "category": "Security",
+    "description": "Implement a permanent account deletion flow for GDPR compliance",
+    "steps": [
+      "Add DELETE /api/auth/me endpoint in backend/server.ts",
+      "Add Delete Account button in expo/app/(tabs)/profile.tsx",
+      "Implement confirmation modal and redirect to login on success"
+    ],
+    "priority": 1,
+    "passes": false,
+    "selected": true,
+    "status": "pending",
+    "order": 13,
+    "source": "user-added",
+    "addedAt": "2025-12-27T21:49:21.431Z"
+  },
+  {
+    "id": "body-metrics-tracker-1766872160652",
+    "category": "Data",
+    "description": "Allow users to track weight and BMI changes over time",
+    "steps": [
+      "Create user_body_metrics table in backend/schema.ts",
+      "Add GET/POST endpoints for metrics in backend/server.ts",
+      "Add visual chart to expo/app/(tabs)/profile.tsx using react-native-chart-kit"
+    ],
+    "priority": 2,
+    "passes": false,
+    "selected": true,
+    "status": "pending",
+    "order": 14,
+    "source": "user-added",
+    "addedAt": "2025-12-27T21:49:21.431Z"
+  },
+  {
+    "id": "audio-voice-cues-1766872160652",
+    "category": "User Experience",
+    "description": "Add text-to-speech audio cues for workout intervals and rest periods",
+    "steps": [
+      "Install expo-speech in expo/package.json",
+      "Implement speech triggers in expo/app/workout/[id].tsx for start/stop/rest events",
+      "Add mute toggle in the active workout header"
+    ],
+    "priority": 2,
+    "passes": false,
+    "selected": true,
+    "status": "pending",
+    "order": 15,
+    "source": "user-added",
+    "addedAt": "2025-12-27T21:49:21.431Z"
+  },
+  {
+    "id": "weekly-workout-goals-1766872160652",
+    "category": "User Experience",
+    "description": "Enable users to set and track a weekly workout frequency goal",
+    "steps": [
+      "Add weekly_goal column to users table in backend/schema.ts",
+      "Update profile endpoint to support goal setting",
+      "Visualize goal vs actual progress in expo/app/(tabs)/index.tsx"
+    ],
+    "priority": 2,
+    "passes": false,
+    "selected": true,
+    "status": "pending",
+    "order": 16,
+    "source": "user-added",
+    "addedAt": "2025-12-27T21:49:21.431Z"
+  },
+  {
+    "id": "admin-dashboard-analytics-1766872160652",
+    "category": "Admin",
+    "description": "Populate the empty admin dashboard with high-level app statistics",
+    "steps": [
+      "Create /api/admin/stats endpoint in backend/server.ts for user/workout counts",
+      "Implement fetch logic in vitereact/src/pages/admin/Dashboard.tsx",
+      "Display key metrics (Active Users, Most Popular Workout) using simple cards"
+    ],
+    "priority": 3,
+    "passes": false,
+    "selected": true,
+    "status": "pending",
+    "order": 17,
+    "source": "user-added",
+    "addedAt": "2025-12-27T21:49:21.431Z"
+  },
+  {
+    "id": "workout-rating-system-1766872160652",
+    "category": "Data",
+    "description": "Allow users to rate workouts after completion to help others choose",
+    "steps": [
+      "Create workout_ratings table in backend/schema.ts",
+      "Add rating input to the summary view in expo/app/workout/[id].tsx",
+      "Display average rating in expo/app/(tabs)/explore.tsx"
+    ],
+    "priority": 3,
+    "passes": false,
+    "selected": true,
+    "status": "pending",
+    "order": 18,
+    "source": "user-added",
+    "addedAt": "2025-12-27T21:49:21.431Z"
+  },
+  {
+    "id": "admin-user-management-1766872160652",
+    "category": "Admin",
+    "description": "Admin interface to view, search, and manage registered users",
+    "steps": [
+      "Create /api/admin/users endpoint in backend/server.ts",
+      "Create new page vitereact/src/pages/admin/Users.tsx",
+      "Add link to AdminLayout.tsx sidebar"
+    ],
+    "priority": 2,
+    "passes": false,
+    "selected": true,
+    "status": "pending",
+    "order": 19,
+    "source": "user-added",
+    "addedAt": "2025-12-27T21:49:21.431Z"
+  },
+  {
+    "id": "exercise-swapping-1766872160652",
+    "category": "User Experience",
+    "description": "Allow users to swap an exercise for another targeting the same muscle group",
+    "steps": [
+      "Add 'Swap' button to exercise card in expo/app/workout/[id].tsx",
+      "Fetch alternative exercises from /api/exercises filtered by target_muscle_group",
+      "Update local logs state to reflect the new exercise ID"
+    ],
+    "priority": 4,
+    "passes": false,
+    "selected": true,
+    "status": "pending",
+    "order": 20,
+    "source": "user-added",
+    "addedAt": "2025-12-27T21:49:21.431Z"
+  },
+  {
+    "id": "pr-alerts-1766872160652",
+    "category": "User Experience",
+    "description": "Notify users when they hit a new Personal Record for an exercise",
+    "steps": [
+      "Enhance POST /api/workout-logs in backend/server.ts to compare against max_weight history",
+      "Return pr_achieved flag in response",
+      "Display celebration animation in expo/app/workout/[id].tsx summary"
+    ],
+    "priority": 3,
+    "passes": false,
+    "selected": true,
+    "status": "pending",
+    "order": 21,
+    "source": "user-added",
+    "addedAt": "2025-12-27T21:49:21.431Z"
+  },
+  {
+    "id": "workout-scheduling-1766872160652",
+    "category": "Integration",
+    "description": "Allow users to schedule specific workouts for future dates",
+    "steps": [
+      "Create user_schedule table in backend/schema.ts",
+      "Add calendar view to expo/app/(tabs)/index.tsx",
+      "Implement scheduled workout prompts on the dashboard"
+    ],
+    "priority": 3,
+    "passes": false,
+    "selected": true,
+    "status": "pending",
+    "order": 22,
+    "source": "user-added",
+    "addedAt": "2025-12-27T21:49:21.431Z"
   }
 ]
