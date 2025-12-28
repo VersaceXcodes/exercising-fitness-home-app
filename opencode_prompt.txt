@@ -5,40 +5,35 @@ The Expo React Native app failed to build due to a Metro bundler error. You need
 ## Error Type: Expo/Metro build error: Cannot find module
 
 ## Metro Bundler Output:
-'@0no-co/graphql.web'
-Require stack:
-- /app/expo/node_modules/@urql/core/dist/urql-core.js
-- /app/expo/node_modules/expo/node_modules/@expo/cli/build/src/api/graphql/client.js
-- /app/expo/node_modules/expo/node_modules/@expo/cli/build/src/api/graphql/queries/AppQuery.js
-- /app/expo/node_modules/expo/node_modules/@expo/cli/build/src/utils/codesigning.js
-- /app/expo/node_modules/expo/node_modules/@expo/cli/build/src/api/user/user.js
-- /app/expo/node_modules/expo/node_modules/@expo/cli/build/src/utils/telemetry/index.js
+index.js
 - /app/expo/node_modules/expo/node_modules/@expo/cli/build/bin/cli
 - /app/expo/node_modules/expo/bin/cli
-    at Module._resolveFilename (node:internal/modules/cjs/loader:1207:15)
-    at Module._load (node:internal/modules/cjs/loader:1038:27)
+Error: Cannot find module 'lighthouse-logger'
+Require stack:
+- /app/expo/node_modules/chrome-launcher/dist/chrome-finder.js
+- /app/expo/node_modules/chrome-launcher/dist/chrome-launcher.js
+- /app/expo/node_modules/chrome-launcher/dist/index.js
+- /app/expo/node_modules/@react-native/dev-middleware/dist/utils/DefaultBrowserLauncher.js
+- /app/expo/node_modules/@react-native/dev-middleware/dist/createDevMiddleware.js
+- /app/expo/node_modules/@react-native/dev-middleware/dist/index.js
+- /app/expo/node_modules/expo/node_modules/@expo/cli/build/src/start/server/metro/debugging/createDebugMiddleware.js
+- /app/expo/node_modules/expo/node_modules/@expo/cli/build/src/start/server/metro/instantiateMetro.js
+- /app/expo/node_modules/expo/node_modules/@expo/cli/build/src/start/server/metro/MetroBundlerDevServer.js
+- /app/expo/node_modules/expo/node_modules/@expo/cli/build/src/start/server/DevServerManager.js
+- /app/expo/node_modules/expo/node_modules/@expo/cli/build/src/start/startAsync.js
+- /app/expo/node_modules/expo/node_modules/@expo/cli/build/src/start/index.js
+- /app/expo/node_modules/expo/node_modules/@expo/cli/build/bin/cli
+- /app/expo/node_modules/expo/bin/cli
+    at Function.Module._resolveFilename (node:internal/modules/cjs/loader:1207:15)
+    at Function.Module._load (node:internal/modules/cjs/loader:1038:27)
     at Module.require (node:internal/modules/cjs/loader:1289:19)
     at require (node:internal/modules/helpers:182:18)
-    at Object.<anonymous> (/app/expo/node_modules/@urql/core/dist/urql-core.js:3:19)
+    at Object.<anonymous> (/app/expo/node_modules/chrome-launcher/src/chrome-finder.ts:13:13)
     at Module._compile (node:internal/modules/cjs/loader:1521:14)
-    at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
+    at Object.Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
     at Module.load (node:internal/modules/cjs/loader:1266:32)
-    at Module._load (node:internal/modules/cjs/loader:1091:12)
-    at Module.require (node:internal/modules/cjs/loader:1289:19) {
-  code: 'MODULE_NOT_FOUND',
-  requireStack: [
-    '/app/expo/node_modules/@urql/core/dist/urql-core.js',
-    '/app/expo/node_modules/expo/node_modules/@expo/cli/build/src/api/graphql/client.js',
-    '/app/expo/node_modules/expo/node_modules/@expo/cli/build/src/api/graphql/queries/AppQuery.js',
-    '/app/expo/node_modules/expo/node_modules/@expo/cli/build/src/utils/codesigning.js',
-    '/app/expo/node_modules/expo/node_modules/@expo/cli/build/src/api/user/user.js',
-    '/app/expo/node_modules/expo/node_modules/@expo/cli/build/src/utils/telemetry/index.js',
-    '/app/expo/node_modules/expo/node_modules/@expo/cli/build/bin/cli',
-    '/app/expo/node_modules/expo/bin/cli'
-  ]
-}
-
-Node.js v20.19.5
+    at Function.Module._load (node:internal/modules/cjs/loader:1091:12)
+    at Module.require (node:internal/modules/cjs/loader:1289:19)
 
 
 ## Working Directory: /app/expo
