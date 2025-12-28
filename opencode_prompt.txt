@@ -5,9 +5,11 @@ The Expo React Native app failed to build due to a Metro bundler error. You need
 ## Error Type: Expo/Metro build error: Cannot find module
 
 ## Metro Bundler Output:
-ules/expo/node_modules/@expo/cli/build/src/utils/link.js
-- /app/expo/node_modules/expo/node_modules/@expo/cli/build/src/api/user/otp.js
-- /app/expo/node_modules/expo/node_modules/@expo/cli/build/src/api/user/actions.js
+'@0no-co/graphql.web'
+Require stack:
+- /app/expo/node_modules/@urql/core/dist/urql-core.js
+- /app/expo/node_modules/expo/node_modules/@expo/cli/build/src/api/graphql/client.js
+- /app/expo/node_modules/expo/node_modules/@expo/cli/build/src/api/graphql/queries/AppQuery.js
 - /app/expo/node_modules/expo/node_modules/@expo/cli/build/src/utils/codesigning.js
 - /app/expo/node_modules/expo/node_modules/@expo/cli/build/src/api/user/user.js
 - /app/expo/node_modules/expo/node_modules/@expo/cli/build/src/utils/telemetry/index.js
@@ -17,7 +19,7 @@ ules/expo/node_modules/@expo/cli/build/src/utils/link.js
     at Module._load (node:internal/modules/cjs/loader:1038:27)
     at Module.require (node:internal/modules/cjs/loader:1289:19)
     at require (node:internal/modules/helpers:182:18)
-    at Object.<anonymous> (/app/expo/node_modules/terminal-link/index.js:2:21)
+    at Object.<anonymous> (/app/expo/node_modules/@urql/core/dist/urql-core.js:3:19)
     at Module._compile (node:internal/modules/cjs/loader:1521:14)
     at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
     at Module.load (node:internal/modules/cjs/loader:1266:32)
@@ -25,10 +27,9 @@ ules/expo/node_modules/@expo/cli/build/src/utils/link.js
     at Module.require (node:internal/modules/cjs/loader:1289:19) {
   code: 'MODULE_NOT_FOUND',
   requireStack: [
-    '/app/expo/node_modules/terminal-link/index.js',
-    '/app/expo/node_modules/expo/node_modules/@expo/cli/build/src/utils/link.js',
-    '/app/expo/node_modules/expo/node_modules/@expo/cli/build/src/api/user/otp.js',
-    '/app/expo/node_modules/expo/node_modules/@expo/cli/build/src/api/user/actions.js',
+    '/app/expo/node_modules/@urql/core/dist/urql-core.js',
+    '/app/expo/node_modules/expo/node_modules/@expo/cli/build/src/api/graphql/client.js',
+    '/app/expo/node_modules/expo/node_modules/@expo/cli/build/src/api/graphql/queries/AppQuery.js',
     '/app/expo/node_modules/expo/node_modules/@expo/cli/build/src/utils/codesigning.js',
     '/app/expo/node_modules/expo/node_modules/@expo/cli/build/src/api/user/user.js',
     '/app/expo/node_modules/expo/node_modules/@expo/cli/build/src/utils/telemetry/index.js',

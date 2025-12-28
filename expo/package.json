@@ -12,6 +12,7 @@
     "lint": "expo lint"
   },
   "dependencies": {
+    "@0no-co/graphql.web": "^1.2.0",
     "@expo/cli": "^54.0.20",
     "@expo/config": "^12.0.13",
     "@expo/vector-icons": "^15.0.2",
