@@ -6,11 +6,18 @@ import { IconSymbol } from '@/components/ui/icon-symbol';
 import { useAuth } from '@/contexts/AuthContext';
 import { apiService } from '@/services/api';
 import { router } from 'expo-router';
+import { SubscriptionModal } from '@/components/SubscriptionModal';
 
 interface UserStats {
   totalWorkouts: number;
   totalDurationMinutes: number;
   workoutsThisWeek: number;
+}
+
+interface SubscriptionStatus {
+  is_pro: boolean;
+  subscription_status: string;
+  expires_at?: string;
 }
 
 export default function ProfileScreen() {
@@ -24,6 +31,11 @@ export default function ProfileScreen() {
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(user?.name || '');
   const [saving, setSaving] = useState(false);
+  const [subscriptionStatus, setSubscriptionStatus] = useState<SubscriptionStatus>({
+    is_pro: false,
+    subscription_status: 'free',
+  });
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
 
   useEffect(() => {
     loadProfileData();
@@ -38,9 +50,15 @@ export default function ProfileScreen() {
   const loadProfileData = async () => {
     try {
       setLoading(true);
-      const statsData = await apiService.getUserStats();
+      const [statsData, subStatus] = await Promise.all([
+        apiService.getUserStats(),
+        apiService.getSubscriptionStatus(),
+      ]);
       if (statsData) {
         setStats(statsData);
+      }
+      if (subStatus) {
+        setSubscriptionStatus(subStatus);
       }
     } catch (error) {
       console.error('Failed to load profile data:', error);
@@ -48,6 +66,36 @@ export default function ProfileScreen() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSubscriptionSuccess = () => {
+    loadProfileData();
+  };
+
+  const handleCancelSubscription = async () => {
+    Alert.alert(
+      'Cancel Subscription',
+      'Are you sure you want to cancel your Pro subscription? You will still have access until the end of your billing period.',
+      [
+        {
+          text: 'No, Keep It',
+          style: 'cancel',
+        },
+        {
+          text: 'Yes, Cancel',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await apiService.cancelSubscription();
+              Alert.alert('Success', 'Your subscription has been cancelled.');
+              loadProfileData();
+            } catch (error) {
+              Alert.alert('Error', 'Failed to cancel subscription');
+            }
+          },
+        },
+      ]
+    );
   };
 
   const handleUpdateProfile = async () => {
@@ -172,6 +220,57 @@ export default function ProfileScreen() {
         </View>
       </View>
 
+      {/* Subscription Section */}
+      <View style={styles.subscriptionContainer}>
+        <ThemedText type="subtitle" style={styles.sectionTitle}>Subscription</ThemedText>
+        <View style={styles.subscriptionCard}>
+          {subscriptionStatus.is_pro ? (
+            <>
+              <View style={styles.proHeader}>
+                <View style={[styles.proBadge, { backgroundColor: '#FFD700' }]}>
+                  <IconSymbol name="star.fill" size={20} color="#fff" />
+                  <ThemedText style={styles.proText}>PRO</ThemedText>
+                </View>
+                <ThemedText style={styles.subscriptionTitle}>Premium Member</ThemedText>
+              </View>
+              <ThemedText style={styles.subscriptionDescription}>
+                You have access to all premium features
+              </ThemedText>
+              {subscriptionStatus.expires_at && (
+                <ThemedText style={styles.expiryText}>
+                  {subscriptionStatus.subscription_status === 'cancelled' 
+                    ? `Access until: ${new Date(subscriptionStatus.expires_at).toLocaleDateString()}`
+                    : `Renews on: ${new Date(subscriptionStatus.expires_at).toLocaleDateString()}`
+                  }
+                </ThemedText>
+              )}
+              {subscriptionStatus.subscription_status === 'active' && (
+                <TouchableOpacity 
+                  style={styles.cancelButton} 
+                  onPress={handleCancelSubscription}
+                >
+                  <ThemedText style={styles.cancelButtonText}>Cancel Subscription</ThemedText>
+                </TouchableOpacity>
+              )}
+            </>
+          ) : (
+            <>
+              <ThemedText style={styles.subscriptionTitle}>Free Plan</ThemedText>
+              <ThemedText style={styles.subscriptionDescription}>
+                Upgrade to Pro for unlimited access and premium features
+              </ThemedText>
+              <TouchableOpacity 
+                style={styles.upgradeButton}
+                onPress={() => setShowSubscriptionModal(true)}
+              >
+                <IconSymbol name="star.fill" size={18} color="#fff" />
+                <ThemedText style={styles.upgradeButtonText}>Upgrade to Pro - $10/month</ThemedText>
+              </TouchableOpacity>
+            </>
+          )}
+        </View>
+      </View>
+
       <View style={styles.menuContainer}>
         <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/(tabs)/history')}>
           <View style={styles.menuItemLeft}>
@@ -190,6 +289,12 @@ export default function ProfileScreen() {
           </View>
         </TouchableOpacity>
       </View>
+
+      <SubscriptionModal 
+        visible={showSubscriptionModal}
+        onClose={() => setShowSubscriptionModal(false)}
+        onSubscribe={handleSubscriptionSuccess}
+      />
     </ScrollView>
   );
 }
@@ -387,5 +492,94 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: '#F0F0F0',
     marginHorizontal: 16,
+  },
+  subscriptionContainer: {
+    paddingHorizontal: 24,
+    marginBottom: 24,
+  },
+  subscriptionCard: {
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    padding: 20,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 3,
+      },
+      web: {
+        boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+      },
+    }),
+  },
+  proHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  proBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    marginRight: 12,
+    gap: 4,
+  },
+  proText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
+  subscriptionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 8,
+  },
+  subscriptionDescription: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 12,
+  },
+  expiryText: {
+    fontSize: 13,
+    color: '#999',
+    marginBottom: 12,
+  },
+  upgradeButton: {
+    flexDirection: 'row',
+    backgroundColor: '#4A90E2',
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    marginTop: 8,
+  },
+  upgradeButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  cancelButton: {
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: '#F44336',
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  cancelButtonText: {
+    color: '#F44336',
+    fontSize: 14,
+    fontWeight: '600',
   },
 });

@@ -120,3 +120,21 @@ CREATE TABLE IF NOT EXISTS user_favorites (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   UNIQUE(user_id, workout_id)
 );
+
+-- Add subscription fields to users table
+ALTER TABLE users ADD COLUMN IF NOT EXISTS is_pro BOOLEAN DEFAULT false;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS pro_expires_at TIMESTAMP WITH TIME ZONE;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS subscription_status VARCHAR(20) DEFAULT 'free'; -- 'free', 'active', 'expired', 'cancelled'
+
+-- Subscription transactions table for tracking payments
+CREATE TABLE IF NOT EXISTS subscription_transactions (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  amount DECIMAL(10,2) NOT NULL,
+  currency VARCHAR(10) DEFAULT 'USD',
+  status VARCHAR(20) DEFAULT 'pending', -- 'pending', 'completed', 'failed'
+  transaction_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  expiry_date TIMESTAMP WITH TIME ZONE,
+  payment_method VARCHAR(50), -- 'card', 'paypal', etc.
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);

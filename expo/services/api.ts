@@ -308,6 +308,28 @@ class ApiService {
     return this.request('/api/workout-logs');
   }
 
+  // Subscription
+  async getSubscriptionStatus() {
+    return this.request('/api/subscription/status');
+  }
+
+  async subscribe(paymentMethod: string = 'card') {
+    return this.request('/api/subscription/subscribe', {
+      method: 'POST',
+      body: JSON.stringify({ payment_method: paymentMethod }),
+    });
+  }
+
+  async cancelSubscription() {
+    return this.request('/api/subscription/cancel', {
+      method: 'POST',
+    });
+  }
+
+  async getSubscriptionHistory() {
+    return this.request('/api/subscription/history');
+  }
+
   // Caching
   async saveToCache(key: string, data: any) {
     try {

@@ -218,15 +218,19 @@ app.get('/api/auth/verify', authenticate_token, (req, res) => {
 });
 
 // Get current user endpoint
-app.get('/api/auth/me', authenticate_token, (req, res) => {
-  res.json({
-    user: {
-      id: req.user.id,
-      email: req.user.email,
-      name: req.user.name,
-      created_at: req.user.created_at
-    }
-  });
+app.get('/api/auth/me', authenticate_token, async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT id, email, name, created_at, is_pro, pro_expires_at, subscription_status FROM users WHERE id = $1',
+      [req.user.id]
+    );
+    res.json({
+      user: result.rows[0]
+    });
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 });
 
 // Update user profile endpoint
@@ -713,6 +717,132 @@ app.get('/api/workout-logs', authenticate_token, async (req, res) => {
     res.json(result.rows);
   } catch (error) {
     console.error('Error fetching workout logs:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// SUBSCRIPTION ROUTES
+
+// Get subscription status
+app.get('/api/subscription/status', authenticate_token, async (req, res) => {
+  try {
+    const user_id = req.user.id;
+    const result = await pool.query(
+      'SELECT is_pro, pro_expires_at, subscription_status FROM users WHERE id = $1',
+      [user_id]
+    );
+    
+    const user = result.rows[0];
+    const now = new Date();
+    
+    // Check if subscription expired
+    if (user.is_pro && user.pro_expires_at && new Date(user.pro_expires_at) < now) {
+      await pool.query(
+        'UPDATE users SET is_pro = false, subscription_status = $1 WHERE id = $2',
+        ['expired', user_id]
+      );
+      return res.json({
+        is_pro: false,
+        subscription_status: 'expired',
+        expires_at: user.pro_expires_at
+      });
+    }
+    
+    res.json({
+      is_pro: user.is_pro || false,
+      subscription_status: user.subscription_status || 'free',
+      expires_at: user.pro_expires_at
+    });
+  } catch (error) {
+    console.error('Error fetching subscription status:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Create subscription (simulate payment - in production would integrate with Stripe/PayPal)
+app.post('/api/subscription/subscribe', authenticate_token, async (req, res) => {
+  try {
+    const user_id = req.user.id;
+    const { payment_method } = req.body;
+    
+    // Calculate expiry date (30 days from now)
+    const expiryDate = new Date();
+    expiryDate.setDate(expiryDate.getDate() + 30);
+    
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      
+      // Update user subscription
+      await client.query(
+        `UPDATE users 
+         SET is_pro = true, 
+             pro_expires_at = $1, 
+             subscription_status = 'active' 
+         WHERE id = $2`,
+        [expiryDate, user_id]
+      );
+      
+      // Record transaction
+      await client.query(
+        `INSERT INTO subscription_transactions 
+         (user_id, amount, status, expiry_date, payment_method) 
+         VALUES ($1, $2, $3, $4, $5)`,
+        [user_id, 10.00, 'completed', expiryDate, payment_method || 'card']
+      );
+      
+      await client.query('COMMIT');
+      
+      res.json({
+        message: 'Subscription activated successfully',
+        is_pro: true,
+        expires_at: expiryDate,
+        subscription_status: 'active'
+      });
+    } catch (e) {
+      await client.query('ROLLBACK');
+      throw e;
+    } finally {
+      client.release();
+    }
+  } catch (error) {
+    console.error('Error creating subscription:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Cancel subscription
+app.post('/api/subscription/cancel', authenticate_token, async (req, res) => {
+  try {
+    const user_id = req.user.id;
+    
+    // Update subscription status to cancelled (but keep pro until expiry)
+    await pool.query(
+      'UPDATE users SET subscription_status = $1 WHERE id = $2',
+      ['cancelled', user_id]
+    );
+    
+    res.json({
+      message: 'Subscription cancelled. You will have access until the current period ends.',
+      subscription_status: 'cancelled'
+    });
+  } catch (error) {
+    console.error('Error cancelling subscription:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Get subscription history
+app.get('/api/subscription/history', authenticate_token, async (req, res) => {
+  try {
+    const user_id = req.user.id;
+    const result = await pool.query(
+      'SELECT * FROM subscription_transactions WHERE user_id = $1 ORDER BY created_at DESC',
+      [user_id]
+    );
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching subscription history:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
