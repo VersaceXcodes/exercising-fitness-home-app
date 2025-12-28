@@ -5,7 +5,7 @@ import { ThemedText } from '@/components/themed-text';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { useAuth } from '@/contexts/AuthContext';
 import { apiService } from '@/services/api';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { SubscriptionModal } from '@/components/SubscriptionModal';
 
 interface UserStats {
@@ -22,6 +22,7 @@ interface SubscriptionStatus {
 
 export default function ProfileScreen() {
   const { user, logout } = useAuth();
+  const params = useLocalSearchParams();
   const [stats, setStats] = useState<UserStats>({
     totalWorkouts: 0,
     totalDurationMinutes: 0,
@@ -39,6 +40,25 @@ export default function ProfileScreen() {
 
   useEffect(() => {
     loadProfileData();
+    
+    // Handle Stripe redirect success/cancel
+    if (params.success === 'true') {
+      Alert.alert(
+        'Payment Successful!',
+        'Your Pro subscription has been activated. Please wait a moment for the webhook to process.',
+        [{ text: 'OK', onPress: () => {
+          // Remove query params and reload
+          router.replace('/profile');
+          setTimeout(() => loadProfileData(), 2000); // Reload after 2 seconds to let webhook process
+        }}]
+      );
+    } else if (params.cancelled === 'true') {
+      Alert.alert(
+        'Payment Cancelled',
+        'Your payment was cancelled. You can try again anytime.',
+        [{ text: 'OK', onPress: () => router.replace('/profile') }]
+      );
+    }
   }, []);
 
   useEffect(() => {

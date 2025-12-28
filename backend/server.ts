@@ -8,10 +8,20 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
+import Stripe from 'stripe';
 
 dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret';
+
+// Initialize Stripe with API key from LaunchPulse (falls back to direct key for testing)
+const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || process.env.LAUNCHPULSE_STRIPE_KEY;
+const stripe = STRIPE_SECRET_KEY ? new Stripe(STRIPE_SECRET_KEY, {
+  apiVersion: '2025-12-15.clover' as any,
+}) : null;
+
+// Stripe webhook secret for verifying webhook signatures
+const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
 
 const { DATABASE_URL, PGHOST, PGDATABASE, PGUSER, PGPASSWORD, PGPORT = 5432 } = process.env;
 
@@ -759,54 +769,69 @@ app.get('/api/subscription/status', authenticate_token, async (req, res) => {
   }
 });
 
-// Create subscription (simulate payment - in production would integrate with Stripe/PayPal)
-app.post('/api/subscription/subscribe', authenticate_token, async (req, res) => {
+// Create Stripe Checkout session for subscription
+app.post('/api/subscription/create-checkout', authenticate_token, async (req, res) => {
   try {
-    const user_id = req.user.id;
-    const { payment_method } = req.body;
-    
-    // Calculate expiry date (30 days from now)
-    const expiryDate = new Date();
-    expiryDate.setDate(expiryDate.getDate() + 30);
-    
-    const client = await pool.connect();
-    try {
-      await client.query('BEGIN');
-      
-      // Update user subscription
-      await client.query(
-        `UPDATE users 
-         SET is_pro = true, 
-             pro_expires_at = $1, 
-             subscription_status = 'active' 
-         WHERE id = $2`,
-        [expiryDate, user_id]
-      );
-      
-      // Record transaction
-      await client.query(
-        `INSERT INTO subscription_transactions 
-         (user_id, amount, status, expiry_date, payment_method) 
-         VALUES ($1, $2, $3, $4, $5)`,
-        [user_id, 10.00, 'completed', expiryDate, payment_method || 'card']
-      );
-      
-      await client.query('COMMIT');
-      
-      res.json({
-        message: 'Subscription activated successfully',
-        is_pro: true,
-        expires_at: expiryDate,
-        subscription_status: 'active'
+    if (!stripe) {
+      return res.status(500).json({ 
+        message: 'Stripe is not configured. Please add STRIPE_SECRET_KEY to environment variables.' 
       });
-    } catch (e) {
-      await client.query('ROLLBACK');
-      throw e;
-    } finally {
-      client.release();
     }
+
+    const user_id = req.user.id;
+    const user = req.user;
+    
+    // Get or create Stripe customer
+    let customer_id;
+    const userResult = await pool.query(
+      'SELECT stripe_customer_id FROM users WHERE id = $1',
+      [user_id]
+    );
+    
+    if (userResult.rows[0].stripe_customer_id) {
+      customer_id = userResult.rows[0].stripe_customer_id;
+    } else {
+      // Create new Stripe customer
+      const customer = await stripe.customers.create({
+        email: user.email,
+        name: user.name,
+        metadata: {
+          user_id: user_id.toString()
+        }
+      });
+      customer_id = customer.id;
+      
+      // Save customer ID to database
+      await pool.query(
+        'UPDATE users SET stripe_customer_id = $1 WHERE id = $2',
+        [customer_id, user_id]
+      );
+    }
+    
+    // Create Stripe Checkout session using the provided price ID
+    const session = await stripe.checkout.sessions.create({
+      customer: customer_id,
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price: 'price_1SigMZPcK8tlwdsdzcMJ2AFw', // Pro Plan $10 one-time from Product Manager
+          quantity: 1,
+        },
+      ],
+      mode: 'payment', // one-time payment
+      success_url: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/profile?success=true`,
+      cancel_url: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/profile?cancelled=true`,
+      metadata: {
+        user_id: user_id.toString()
+      }
+    });
+    
+    res.json({
+      sessionId: session.id,
+      url: session.url
+    });
   } catch (error) {
-    console.error('Error creating subscription:', error);
+    console.error('Error creating checkout session:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
@@ -844,6 +869,96 @@ app.get('/api/subscription/history', authenticate_token, async (req, res) => {
   } catch (error) {
     console.error('Error fetching subscription history:', error);
     res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Stripe webhook endpoint (must use raw body for signature verification)
+app.post('/api/webhooks/stripe', express.raw({type: 'application/json'}), async (req, res) => {
+  if (!stripe) {
+    return res.status(500).json({ error: 'Stripe not configured' });
+  }
+
+  const sig = req.headers['stripe-signature'];
+  
+  let event;
+  
+  try {
+    // Verify webhook signature if webhook secret is configured
+    if (STRIPE_WEBHOOK_SECRET && sig) {
+      event = stripe.webhooks.constructEvent(req.body, sig, STRIPE_WEBHOOK_SECRET);
+    } else {
+      // For testing without signature verification
+      event = JSON.parse(req.body.toString());
+    }
+  } catch (err) {
+    console.error('Webhook signature verification failed:', err.message);
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  // Handle the event
+  try {
+    switch (event.type) {
+      case 'checkout.session.completed':
+        const session = event.data.object;
+        
+        // Get user_id from metadata
+        const user_id = parseInt(session.metadata.user_id);
+        
+        if (!user_id) {
+          console.error('No user_id in session metadata');
+          break;
+        }
+        
+        // Calculate expiry date (30 days from now for one-time payment)
+        const expiryDate = new Date();
+        expiryDate.setDate(expiryDate.getDate() + 30);
+        
+        const client = await pool.connect();
+        try {
+          await client.query('BEGIN');
+          
+          // Update user subscription
+          await client.query(
+            `UPDATE users 
+             SET is_pro = true, 
+                 pro_expires_at = $1, 
+                 subscription_status = 'active'
+             WHERE id = $2`,
+            [expiryDate, user_id]
+          );
+          
+          // Record transaction
+          await client.query(
+            `INSERT INTO subscription_transactions 
+             (user_id, amount, currency, status, expiry_date, payment_method, stripe_payment_intent_id) 
+             VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+            [user_id, 10.00, 'USD', 'completed', expiryDate, 'card', session.payment_intent]
+          );
+          
+          await client.query('COMMIT');
+          console.log(`✅ Subscription activated for user ${user_id}`);
+        } catch (e) {
+          await client.query('ROLLBACK');
+          console.error('Database error activating subscription:', e);
+          throw e;
+        } finally {
+          client.release();
+        }
+        break;
+        
+      case 'payment_intent.payment_failed':
+        const paymentIntent = event.data.object;
+        console.log(`❌ Payment failed: ${paymentIntent.id}`);
+        break;
+        
+      default:
+        console.log(`Unhandled event type ${event.type}`);
+    }
+    
+    res.json({ received: true });
+  } catch (error) {
+    console.error('Error processing webhook:', error);
+    res.status(500).json({ error: 'Webhook processing failed' });
   }
 });
 

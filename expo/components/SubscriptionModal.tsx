@@ -23,28 +23,37 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
   onSubscribe,
 }) => {
   const [loading, setLoading] = useState(false);
-  const [selectedPayment, setSelectedPayment] = useState<'card' | 'paypal'>('card');
 
   const handleSubscribe = async () => {
     setLoading(true);
     try {
-      const response = await apiService.subscribe(selectedPayment);
-      Alert.alert(
-        'Success!',
-        'You are now a Pro member! Enjoy unlimited access to all features.',
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              onSubscribe();
-              onClose();
-            },
-          },
-        ]
-      );
+      // Create Stripe Checkout session
+      const response = await apiService.createCheckoutSession();
+      
+      if (response.url) {
+        // Redirect to Stripe Checkout
+        if (typeof window !== 'undefined') {
+          window.location.href = response.url;
+        } else {
+          Alert.alert(
+            'Checkout Ready',
+            'Opening Stripe Checkout...',
+            [
+              {
+                text: 'OK',
+                onPress: () => {
+                  // For mobile, you would use Linking.openURL(response.url)
+                  // or integrate with react-native-webview
+                },
+              },
+            ]
+          );
+        }
+      } else {
+        throw new Error('No checkout URL returned');
+      }
     } catch (error: any) {
-      Alert.alert('Error', error.message || 'Failed to process subscription');
-    } finally {
+      Alert.alert('Error', error.message || 'Failed to create checkout session');
       setLoading(false);
     }
   };
@@ -111,33 +120,10 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
             </View>
 
             <View style={styles.paymentSection}>
-              <Text style={styles.paymentTitle}>Payment Method</Text>
-              
-              <TouchableOpacity
-                style={[
-                  styles.paymentOption,
-                  selectedPayment === 'card' && styles.paymentOptionSelected,
-                ]}
-                onPress={() => setSelectedPayment('card')}
-              >
-                <View style={styles.radio}>
-                  {selectedPayment === 'card' && <View style={styles.radioInner} />}
-                </View>
-                <Text style={styles.paymentText}>Credit/Debit Card</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[
-                  styles.paymentOption,
-                  selectedPayment === 'paypal' && styles.paymentOptionSelected,
-                ]}
-                onPress={() => setSelectedPayment('paypal')}
-              >
-                <View style={styles.radio}>
-                  {selectedPayment === 'paypal' && <View style={styles.radioInner} />}
-                </View>
-                <Text style={styles.paymentText}>PayPal</Text>
-              </TouchableOpacity>
+              <Text style={styles.paymentTitle}>Secure Payment</Text>
+              <Text style={styles.paymentInfo}>
+                Payment is processed securely through Stripe. You'll be redirected to complete your purchase.
+              </Text>
             </View>
 
             <TouchableOpacity
@@ -153,7 +139,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
             </TouchableOpacity>
 
             <Text style={styles.disclaimer}>
-              Your subscription will auto-renew monthly. Cancel anytime from your profile.
+              One-time payment of $10 for 30 days of Pro access. Secure checkout powered by Stripe.
             </Text>
           </ScrollView>
         </View>
@@ -240,45 +226,20 @@ const styles = StyleSheet.create({
   },
   paymentSection: {
     marginBottom: 20,
+    backgroundColor: '#f8f9fa',
+    padding: 15,
+    borderRadius: 8,
   },
   paymentTitle: {
     fontSize: 18,
     fontWeight: '600',
     color: '#333',
-    marginBottom: 12,
+    marginBottom: 8,
   },
-  paymentOption: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 15,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    marginBottom: 10,
-  },
-  paymentOptionSelected: {
-    borderColor: '#4A90E2',
-    backgroundColor: '#f0f8ff',
-  },
-  radio: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: '#4A90E2',
-    marginRight: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  radioInner: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: '#4A90E2',
-  },
-  paymentText: {
-    fontSize: 16,
-    color: '#333',
+  paymentInfo: {
+    fontSize: 14,
+    color: '#666',
+    lineHeight: 20,
   },
   subscribeButton: {
     backgroundColor: '#4A90E2',

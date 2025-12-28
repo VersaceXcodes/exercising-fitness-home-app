@@ -125,6 +125,8 @@ CREATE TABLE IF NOT EXISTS user_favorites (
 ALTER TABLE users ADD COLUMN IF NOT EXISTS is_pro BOOLEAN DEFAULT false;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS pro_expires_at TIMESTAMP WITH TIME ZONE;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS subscription_status VARCHAR(20) DEFAULT 'free'; -- 'free', 'active', 'expired', 'cancelled'
+ALTER TABLE users ADD COLUMN IF NOT EXISTS stripe_customer_id VARCHAR(255);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS stripe_subscription_id VARCHAR(255);
 
 -- Subscription transactions table for tracking payments
 CREATE TABLE IF NOT EXISTS subscription_transactions (
@@ -136,5 +138,7 @@ CREATE TABLE IF NOT EXISTS subscription_transactions (
   transaction_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   expiry_date TIMESTAMP WITH TIME ZONE,
   payment_method VARCHAR(50), -- 'card', 'paypal', etc.
+  stripe_payment_intent_id VARCHAR(255),
+  stripe_subscription_id VARCHAR(255),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );

@@ -313,6 +313,12 @@ class ApiService {
     return this.request('/api/subscription/status');
   }
 
+  async createCheckoutSession() {
+    return this.request('/api/subscription/create-checkout', {
+      method: 'POST',
+    });
+  }
+  
   async subscribe(paymentMethod: string = 'card') {
     return this.request('/api/subscription/subscribe', {
       method: 'POST',

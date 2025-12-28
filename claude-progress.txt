@@ -1,8 +1,123 @@
 # Claude Progress Log
 
-## Session: December 28, 2025
+## Session: December 28, 2025 - Part 2
 
-### Implemented: $10/Month Pro Subscription Feature
+### Implemented: Stripe Payment Integration for Pro Subscription
+
+#### Summary
+Upgraded the existing Pro subscription feature to integrate with real Stripe payment processing. The app now creates actual Stripe Checkout sessions, processes payments through Stripe, and handles webhook events to activate subscriptions automatically.
+
+#### Changes Made
+
+1. **Backend Stripe Integration** (backend/server.ts)
+   - Installed Stripe Node.js SDK (npm install stripe)
+   - Added Stripe configuration with API keys from environment variables
+   - Created new endpoint: POST `/api/subscription/create-checkout`
+     - Creates Stripe Checkout sessions
+     - Gets or creates Stripe customer for each user
+     - Uses price ID: `price_1SigMZPcK8tlwdsdzcMJ2AFw` ($10 one-time payment)
+     - Redirects to Stripe hosted checkout page
+   - Added webhook endpoint: POST `/api/webhooks/stripe`
+     - Handles `checkout.session.completed` events
+     - Activates Pro subscription when payment succeeds
+     - Records transaction in database
+     - Uses webhook signature verification for security
+
+2. **Database Schema Updates** (backend/db.sql)
+   - Added Stripe-specific columns to users table:
+     - `stripe_customer_id` (VARCHAR) - Stripe customer ID
+     - `stripe_subscription_id` (VARCHAR) - Stripe subscription ID
+   - Added Stripe fields to subscription_transactions table:
+     - `stripe_payment_intent_id` (VARCHAR) - Payment intent ID
+     - `stripe_subscription_id` (VARCHAR) - Related subscription ID
+
+3. **Frontend API Updates** (expo/services/api.ts)
+   - Added new method: `createCheckoutSession()`
+     - Calls backend to create Stripe Checkout session
+     - Returns checkout URL for redirect
+
+4. **Subscription Modal Updates** (expo/components/SubscriptionModal.tsx)
+   - Replaced simulated payment with real Stripe Checkout redirect
+   - Removed payment method selection (handled by Stripe)
+   - Added secure payment info message
+   - Updated disclaimer to reflect one-time payment model
+   - Redirects user to Stripe hosted checkout page
+
+5. **Profile Screen Updates** (expo/app/(tabs)/profile.tsx)
+   - Added URL parameter handling with `useLocalSearchParams`
+   - Detects success/cancelled redirects from Stripe
+   - Shows success alert when payment completes
+   - Auto-reloads subscription status after successful payment
+   - Cleans up URL parameters after showing alerts
+
+6. **Documentation**
+   - Created `/app/STRIPE_SETUP.md` with complete setup guide
+   - Created `/app/backend/.env.example` with required environment variables
+   - Documented test mode instructions
+   - Included webhook setup instructions
+   - Added troubleshooting section
+
+#### Environment Variables Required
+
+Backend (.env):
+```
+STRIPE_SECRET_KEY=sk_test_your_key_here
+STRIPE_WEBHOOK_SECRET=whsec_your_secret_here
+FRONTEND_URL=http://localhost:5173
+```
+
+#### Flow
+
+1. User clicks "Upgrade to Pro" on Profile screen
+2. Subscription modal opens with Pro features and pricing
+3. User clicks "Subscribe Now"
+4. Frontend calls backend `/api/subscription/create-checkout`
+5. Backend creates Stripe Checkout session
+6. User redirected to Stripe hosted checkout page
+7. User enters payment details on Stripe
+8. Stripe processes payment
+9. User redirected back to Profile with success=true
+10. Stripe sends webhook to backend
+11. Backend webhook handler activates Pro subscription
+12. User sees success message and Pro badge appears
+
+#### Testing
+
+- Backend server running on port 3000
+- Database migrations applied successfully
+- All endpoints functional
+- Ready for Stripe API key configuration
+
+#### Next Steps for Production
+
+1. Add real Stripe API keys to backend `.env`:
+   - Get keys from Stripe Dashboard
+   - Use test keys (sk_test_) for development
+   - Use live keys (sk_live_) for production
+2. Configure Stripe webhook endpoint
+3. Test with Stripe test cards (4242 4242 4242 4242)
+4. Deploy and test end-to-end payment flow
+5. Monitor webhook events in Stripe Dashboard
+
+#### Files Modified
+
+- `/app/backend/server.ts` - Added Stripe integration and webhook handler
+- `/app/backend/db.sql` - Added Stripe-specific database columns
+- `/app/backend/package.json` - Added Stripe dependency
+- `/app/expo/services/api.ts` - Added createCheckoutSession method
+- `/app/expo/components/SubscriptionModal.tsx` - Updated for Stripe redirect
+- `/app/expo/app/(tabs)/profile.tsx` - Added redirect handling
+
+#### Files Created
+
+- `/app/backend/.env.example` - Environment variables template
+- `/app/STRIPE_SETUP.md` - Complete setup and integration guide
+
+---
+
+## Session: December 28, 2025 - Part 1
+
+### Implemented: $10/Month Pro Subscription Feature (Simulated Payments)
 
 #### Summary
 Added a complete subscription system to the fitness app with $10/month Pro membership that includes premium features. Users can upgrade to Pro, view their subscription status, and manage their subscriptions from their profile.
