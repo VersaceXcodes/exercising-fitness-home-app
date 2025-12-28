@@ -1,53 +1,60 @@
-You are analyzing a codebase to suggest improvements.
+EXPO/METRO BUNDLER ERROR - Immediate Fix Required
 
-## Task
-Suggest new features that would add value to users.
+The Expo React Native app failed to build due to a Metro bundler error. You need to fix this NOW.
 
-## Project Description
-exercising fitness home app
+## Error Type: Expo/Metro build error: Cannot find module
 
-## Existing Features (12 total)
-- [functional] Display categorized list of available home workout routines
-- [functional] Track workout completion, sets, reps, and duration with visual progress indicators and statistics
-- [Data] Implement a workout history screen to view past completed workouts and logs
-- [Admin] Develop a web-based admin dashboard to manage workouts, exercises, and categories
-- [User Experience] Embed video playback for exercises within the active workout screen
-- [User Experience] Create a dedicated User Profile screen for managing account details and viewing stats
-- [Data] Allow users to favorite/bookmark specific workouts for quick access
-- [User Experience] Add an automatic rest timer that triggers between workout sets
-- [Integration] Add search by text and filtering by difficulty to the workout explorer
-- [Data] Visualize strength progress with charts showing weight lifted over time
-- [Performance] Cache workout categories and details for offline access
-- [Integration] Enable sharing of workout summary stats to social media platforms
+## Metro Bundler Output:
+ules/expo/node_modules/@expo/cli/build/src/utils/link.js
+- /app/expo/node_modules/expo/node_modules/@expo/cli/build/src/api/user/otp.js
+- /app/expo/node_modules/expo/node_modules/@expo/cli/build/src/api/user/actions.js
+- /app/expo/node_modules/expo/node_modules/@expo/cli/build/src/utils/codesigning.js
+- /app/expo/node_modules/expo/node_modules/@expo/cli/build/src/api/user/user.js
+- /app/expo/node_modules/expo/node_modules/@expo/cli/build/src/utils/telemetry/index.js
+- /app/expo/node_modules/expo/node_modules/@expo/cli/build/bin/cli
+- /app/expo/node_modules/expo/bin/cli
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1207:15)
+    at Module._load (node:internal/modules/cjs/loader:1038:27)
+    at Module.require (node:internal/modules/cjs/loader:1289:19)
+    at require (node:internal/modules/helpers:182:18)
+    at Object.<anonymous> (/app/expo/node_modules/terminal-link/index.js:2:21)
+    at Module._compile (node:internal/modules/cjs/loader:1521:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
+    at Module.load (node:internal/modules/cjs/loader:1266:32)
+    at Module._load (node:internal/modules/cjs/loader:1091:12)
+    at Module.require (node:internal/modules/cjs/loader:1289:19) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/app/expo/node_modules/terminal-link/index.js',
+    '/app/expo/node_modules/expo/node_modules/@expo/cli/build/src/utils/link.js',
+    '/app/expo/node_modules/expo/node_modules/@expo/cli/build/src/api/user/otp.js',
+    '/app/expo/node_modules/expo/node_modules/@expo/cli/build/src/api/user/actions.js',
+    '/app/expo/node_modules/expo/node_modules/@expo/cli/build/src/utils/codesigning.js',
+    '/app/expo/node_modules/expo/node_modules/@expo/cli/build/src/api/user/user.js',
+    '/app/expo/node_modules/expo/node_modules/@expo/cli/build/src/utils/telemetry/index.js',
+    '/app/expo/node_modules/expo/node_modules/@expo/cli/build/bin/cli',
+    '/app/expo/node_modules/expo/bin/cli'
+  ]
+}
+
+Node.js v20.19.5
 
 
+## Working Directory: /app/expo
 
+## Common Issues to Check:
+1. **Package version conflicts** - Check package.json for incompatible versions (e.g., react-native-worklets, react-native-reanimated)
+2. **Missing dependencies** - Run npm install or add missing packages
+3. **Import errors** - Fix incorrect imports in .tsx/.ts/.js files
+4. **Syntax errors** - Fix TypeScript/JavaScript syntax issues
 
-## Instructions
-1. First, explore the codebase to understand:
-   - Tech stack and dependencies (check package.json files)
-   - Project structure and architecture
-   - Existing components, pages, and API endpoints
-   - Data models and schemas
+## Your Task:
+1. **Read the error carefully** - Identify what package or file is causing the issue
+2. **Check package.json** at /app/expo/package.json for version conflicts
+3. **Fix the version** - Update the problematic package to a compatible version
+4. **Or fix the code** - If it's a code error, fix the specific file
 
-2. Then, generate 10 concrete suggestions that:
-   - Align with the project's tech stack and architecture
-   - Build on existing patterns (don't suggest things already implemented)
-   - Are realistic given the current project structure
-   - Leverage existing dependencies when possible
-   - Reference actual files/components you discovered
-
-3. Format your final response as ONLY a valid JSON array (no markdown, no explanation):
-[
-  {
-    "id": "unique-kebab-case-id",
-    "category": "User Experience" | "Security" | "Performance" | "Data" | "Integration" | "Admin",
-    "description": "Clear description of what to implement",
-    "steps": ["Step 1 referencing actual files", "Step 2", "Step 3"],
-    "priority": 1,
-    "complexity": "low" | "medium" | "high",
-    "reasoning": "Why this fits the existing architecture"
-  }
-]
-
-IMPORTANT: Your final output must be ONLY the JSON array, no other text.
+IMPORTANT: This is an EXPO/React Native app, NOT a backend. Focus on:
+- package.json dependency versions
+- React Native component code
+- Metro bundler configuration
