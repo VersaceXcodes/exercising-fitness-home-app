@@ -8,8 +8,10 @@ import {
   ScrollView,
   ActivityIndicator,
   Alert,
+  Linking,
 } from 'react-native';
-import { apiService } from '../services/api';
+import stripe from '../services/stripe';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface SubscriptionModalProps {
   visible: boolean;
@@ -27,32 +29,48 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
   const handleSubscribe = async () => {
     setLoading(true);
     try {
-      // Create Stripe Checkout session
-      const response = await apiService.createCheckoutSession();
-      
-      if (response.url) {
+      // Get user ID from AsyncStorage
+      const userDataString = await AsyncStorage.getItem('user');
+      const userData = userDataString ? JSON.parse(userDataString) : null;
+      const userId = userData?.id;
+
+      if (!userId) {
+        throw new Error('User not found. Please log in again.');
+      }
+
+      // Create Stripe Checkout session using LaunchPulse proxy
+      const session = await stripe.checkout.sessions.create({
+        line_items: [
+          {
+            price: 'price_1SigMZPcK8tlwdsdzcMJ2AFw', // Pro Plan $10 from Product Manager
+            quantity: 1,
+          },
+        ],
+        mode: 'payment', // one-time payment
+        success_url: typeof window !== 'undefined' 
+          ? `${window.location.origin}/profile?success=true`
+          : 'exp://localhost:5173/profile?success=true',
+        cancel_url: typeof window !== 'undefined'
+          ? `${window.location.origin}/profile?cancelled=true`
+          : 'exp://localhost:5173/profile?cancelled=true',
+        metadata: {
+          userId: userId.toString(),
+        },
+      });
+
+      if (session.url) {
         // Redirect to Stripe Checkout
         if (typeof window !== 'undefined') {
-          window.location.href = response.url;
+          window.location.href = session.url;
         } else {
-          Alert.alert(
-            'Checkout Ready',
-            'Opening Stripe Checkout...',
-            [
-              {
-                text: 'OK',
-                onPress: () => {
-                  // For mobile, you would use Linking.openURL(response.url)
-                  // or integrate with react-native-webview
-                },
-              },
-            ]
-          );
+          // For mobile apps, open in browser
+          await Linking.openURL(session.url);
         }
       } else {
         throw new Error('No checkout URL returned');
       }
     } catch (error: any) {
+      console.error('Checkout error:', error);
       Alert.alert('Error', error.message || 'Failed to create checkout session');
       setLoading(false);
     }

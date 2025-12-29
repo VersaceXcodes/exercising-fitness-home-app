@@ -43,15 +43,36 @@ export default function ProfileScreen() {
     
     // Handle Stripe redirect success/cancel
     if (params.success === 'true') {
-      Alert.alert(
-        'Payment Successful!',
-        'Your Pro subscription has been activated. Please wait a moment for the webhook to process.',
-        [{ text: 'OK', onPress: () => {
-          // Remove query params and reload
-          router.replace('/profile');
-          setTimeout(() => loadProfileData(), 2000); // Reload after 2 seconds to let webhook process
-        }}]
-      );
+      // Poll for subscription status updates (LaunchPulse handles webhooks)
+      let pollCount = 0;
+      const maxPolls = 10;
+      const pollInterval = setInterval(async () => {
+        try {
+          const subStatus = await apiService.getSubscriptionStatus();
+          if (subStatus.is_pro) {
+            clearInterval(pollInterval);
+            Alert.alert(
+              'Payment Successful!',
+              'Your Pro subscription has been activated!',
+              [{ text: 'OK', onPress: () => router.replace('/profile') }]
+            );
+            loadProfileData();
+          }
+          pollCount++;
+          if (pollCount >= maxPolls) {
+            clearInterval(pollInterval);
+            Alert.alert(
+              'Payment Processing',
+              'Your payment is being processed. Your Pro subscription will be activated shortly.',
+              [{ text: 'OK', onPress: () => router.replace('/profile') }]
+            );
+          }
+        } catch (error) {
+          console.error('Error polling subscription status:', error);
+        }
+      }, 2000); // Poll every 2 seconds
+
+      return () => clearInterval(pollInterval);
     } else if (params.cancelled === 'true') {
       Alert.alert(
         'Payment Cancelled',
