@@ -236,23 +236,6 @@
     "attempts": 1
   },
   {
-    "id": "delete-account-flow-1766872160652",
-    "category": "Security",
-    "description": "Implement a permanent account deletion flow for GDPR compliance",
-    "steps": [
-      "Add DELETE /api/auth/me endpoint in backend/server.ts",
-      "Add Delete Account button in expo/app/(tabs)/profile.tsx",
-      "Implement confirmation modal and redirect to login on success"
-    ],
-    "priority": 1,
-    "passes": false,
-    "selected": true,
-    "status": "pending",
-    "order": 13,
-    "source": "user-added",
-    "addedAt": "2025-12-27T21:49:21.431Z"
-  },
-  {
     "id": "body-metrics-tracker-1766872160652",
     "category": "Data",
     "description": "Allow users to track weight and BMI changes over time",
@@ -283,6 +266,23 @@
     "selected": true,
     "status": "pending",
     "order": 15,
+    "source": "user-added",
+    "addedAt": "2025-12-27T21:49:21.431Z"
+  },
+  {
+    "id": "delete-account-flow-1766872160652",
+    "category": "Security",
+    "description": "Implement a permanent account deletion flow for GDPR compliance",
+    "steps": [
+      "Add DELETE /api/auth/me endpoint in backend/server.ts",
+      "Add Delete Account button in expo/app/(tabs)/profile.tsx",
+      "Implement confirmation modal and redirect to login on success"
+    ],
+    "priority": 1,
+    "passes": false,
+    "selected": true,
+    "status": "pending",
+    "order": 13,
     "source": "user-added",
     "addedAt": "2025-12-27T21:49:21.431Z"
   },
@@ -424,5 +424,185 @@
     "source": "user-added",
     "addedAt": "2025-12-28T21:10:00.000Z",
     "completedAt": "2025-12-28T21:10:00.000Z"
+  },
+  {
+    "id": "admin-dashboard-analytics-1767018234680",
+    "category": "Admin",
+    "description": "Implement an analytics dashboard showing key metrics like total users, active subscriptions, and most popular workouts",
+    "steps": [
+      "Create new backend endpoint GET /api/admin/stats to aggregate counts from users, workouts, and workout_logs tables",
+      "Update vitereact/src/services/api.ts to include the new getAdminStats method",
+      "Modify vitereact/src/pages/admin/Dashboard.tsx to fetch and display these metrics in a grid layout",
+      "Add chart visualization for workout completions over time using a library like recharts"
+    ],
+    "priority": 1,
+    "passes": false,
+    "selected": true,
+    "status": "pending",
+    "order": 24,
+    "source": "user-added",
+    "addedAt": "2025-12-29T14:23:55.767Z"
+  },
+  {
+    "id": "workout-exercise-builder-1767018234680",
+    "category": "Admin",
+    "description": "Create a drag-and-drop interface within the Workout form to assign, order, and configure exercises",
+    "steps": [
+      "Create backend endpoints POST/PUT /api/workouts/:id/exercises to handle batch updates of the workout_exercises join table",
+      "Update vitereact/src/pages/admin/WorkoutForm.tsx to include an 'Exercise Picker' modal",
+      "Implement a list component in the form to manage order_index, default_sets, and default_reps for selected exercises",
+      "Add validation to ensure a workout has at least one exercise before publishing"
+    ],
+    "priority": 1,
+    "passes": false,
+    "selected": true,
+    "status": "pending",
+    "order": 25,
+    "source": "user-added",
+    "addedAt": "2025-12-29T14:23:55.767Z"
+  },
+  {
+    "id": "user-management-system-1767018234680",
+    "category": "Admin",
+    "description": "Develop a User Management view to list all users, search by email, and view subscription details",
+    "steps": [
+      "Create backend endpoint GET /api/admin/users with pagination and search support",
+      "Create new page vitereact/src/pages/admin/Users.tsx with a data table component",
+      "Add route /admin/users to vitereact/src/App.tsx and the sidebar in AdminLayout.tsx",
+      "Implement 'View Details' modal showing user profile, stats, and is_pro status"
+    ],
+    "priority": 2,
+    "passes": false,
+    "selected": true,
+    "status": "pending",
+    "order": 26,
+    "source": "user-added",
+    "addedAt": "2025-12-29T14:23:55.767Z"
+  },
+  {
+    "id": "exercise-video-preview-1767018234680",
+    "category": "User Experience",
+    "description": "Add a video preview modal to the Exercise list and form to verify video URLs",
+    "steps": [
+      "Create a reusable VideoModal component in vitereact/src/components/ui/",
+      "Update vitereact/src/pages/admin/Exercises.tsx to add a 'Play' button next to video URLs",
+      "Integrate the modal into vitereact/src/pages/admin/ExerciseForm.tsx to preview the URL while editing",
+      "Handle common video embed formats (YouTube, Vimeo, direct MP4)"
+    ],
+    "priority": 3,
+    "passes": false,
+    "selected": true,
+    "status": "pending",
+    "order": 27,
+    "source": "user-added",
+    "addedAt": "2025-12-29T14:23:55.767Z"
+  },
+  {
+    "id": "global-subscription-monitor-1767018234680",
+    "category": "Data",
+    "description": "Build a transaction history view to monitor revenue and subscription events",
+    "steps": [
+      "Create backend endpoint GET /api/admin/transactions querying the subscription_transactions table",
+      "Create new page vitereact/src/pages/admin/Subscriptions.tsx",
+      "Display transactions in a sortable table with status badges (pending, completed, failed)",
+      "Add filtering by status and date range"
+    ],
+    "priority": 2,
+    "passes": false,
+    "selected": true,
+    "status": "pending",
+    "order": 28,
+    "source": "user-added",
+    "addedAt": "2025-12-29T14:23:55.767Z"
+  },
+  {
+    "id": "bulk-exercise-import-1767018234680",
+    "category": "Performance",
+    "description": "Enable bulk import of exercises via CSV upload to speed up content population",
+    "steps": [
+      "Implement a CSV parsing utility in vitereact/src/utils/csvParser.ts",
+      "Add 'Import CSV' button to vitereact/src/pages/admin/Exercises.tsx",
+      "Create a backend endpoint POST /api/exercises/bulk for batch insertion",
+      "Add UI feedback for success/failure counts"
+    ],
+    "priority": 3,
+    "passes": false,
+    "selected": true,
+    "status": "pending",
+    "order": 29,
+    "source": "user-added",
+    "addedAt": "2025-12-29T14:23:55.767Z"
+  },
+  {
+    "id": "advanced-content-filtering-1767018234680",
+    "category": "User Experience",
+    "description": "Add search, category, and difficulty filters to the Admin Workouts and Exercises lists",
+    "steps": [
+      "Update vitereact/src/services/api.ts to accept query parameters for getWorkouts and getExercises",
+      "Add filter inputs (search bar, dropdowns) to vitereact/src/pages/admin/Workouts.tsx",
+      "Implement debounced search to prevent excessive API calls",
+      "Refactor the backend GET /api/exercises endpoint to support filtering (similar to existing workouts endpoint)"
+    ],
+    "priority": 2,
+    "passes": false,
+    "selected": true,
+    "status": "pending",
+    "order": 30,
+    "source": "user-added",
+    "addedAt": "2025-12-29T14:23:55.767Z"
+  },
+  {
+    "id": "rich-text-descriptions-1767018234680",
+    "category": "User Experience",
+    "description": "Replace standard textareas with a Markdown editor for Workout and Exercise descriptions",
+    "steps": [
+      "Install a lightweight markdown editor package (e.g., react-markdown-editor-lite) in vitereact",
+      "Replace the description textarea in vitereact/src/components/WorkoutForm.tsx and ExerciseForm.tsx",
+      "Sanitize input on the backend to prevent XSS",
+      "Update the frontend display components to render the Markdown content properly"
+    ],
+    "priority": 3,
+    "passes": false,
+    "selected": true,
+    "status": "pending",
+    "order": 31,
+    "source": "user-added",
+    "addedAt": "2025-12-29T14:23:55.767Z"
+  },
+  {
+    "id": "standardized-tag-manager-1767018234680",
+    "category": "Admin",
+    "description": "Create a settings page to manage standardized values for 'Target Muscle Group' and 'Difficulty Level'",
+    "steps": [
+      "Create a new table 'tags' or 'lookups' in backend/db.sql",
+      "Create endpoints to manage these tags",
+      "Update vitereact/src/pages/admin/ExerciseForm.tsx to use a Select dropdown populated by these tags instead of free text",
+      "Create vitereact/src/pages/admin/Settings.tsx to manage the list of available tags"
+    ],
+    "priority": 4,
+    "passes": false,
+    "selected": true,
+    "status": "pending",
+    "order": 32,
+    "source": "user-added",
+    "addedAt": "2025-12-29T14:23:55.767Z"
+  },
+  {
+    "id": "recent-activity-feed-1767018234680",
+    "category": "Data",
+    "description": "Add a real-time activity feed to the dashboard showing recent workout completions",
+    "steps": [
+      "Create backend endpoint GET /api/admin/activity fetching recent workout_logs with user details",
+      "Add an 'Activity Feed' widget to vitereact/src/pages/admin/Dashboard.tsx",
+      "Display relative timestamps (e.g., '2 mins ago') and clickable user/workout links",
+      "Implement auto-refresh or polling every 60 seconds"
+    ],
+    "priority": 4,
+    "passes": false,
+    "selected": true,
+    "status": "pending",
+    "order": 33,
+    "source": "user-added",
+    "addedAt": "2025-12-29T14:23:55.767Z"
   }
 ]
