@@ -236,23 +236,6 @@
     "attempts": 1
   },
   {
-    "id": "body-metrics-tracker-1766872160652",
-    "category": "Data",
-    "description": "Allow users to track weight and BMI changes over time",
-    "steps": [
-      "Create user_body_metrics table in backend/schema.ts",
-      "Add GET/POST endpoints for metrics in backend/server.ts",
-      "Add visual chart to expo/app/(tabs)/profile.tsx using react-native-chart-kit"
-    ],
-    "priority": 2,
-    "passes": false,
-    "selected": true,
-    "status": "pending",
-    "order": 14,
-    "source": "user-added",
-    "addedAt": "2025-12-27T21:49:21.431Z"
-  },
-  {
     "id": "audio-voice-cues-1766872160652",
     "category": "User Experience",
     "description": "Add text-to-speech audio cues for workout intervals and rest periods",
@@ -266,6 +249,23 @@
     "selected": true,
     "status": "pending",
     "order": 15,
+    "source": "user-added",
+    "addedAt": "2025-12-27T21:49:21.431Z"
+  },
+  {
+    "id": "body-metrics-tracker-1766872160652",
+    "category": "Data",
+    "description": "Allow users to track weight and BMI changes over time",
+    "steps": [
+      "Create user_body_metrics table in backend/schema.ts",
+      "Add GET/POST endpoints for metrics in backend/server.ts",
+      "Add visual chart to expo/app/(tabs)/profile.tsx using react-native-chart-kit"
+    ],
+    "priority": 2,
+    "passes": false,
+    "selected": true,
+    "status": "pending",
+    "order": 14,
     "source": "user-added",
     "addedAt": "2025-12-27T21:49:21.431Z"
   },
