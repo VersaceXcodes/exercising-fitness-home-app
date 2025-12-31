@@ -1,111 +1,264 @@
 /**
- * AI Service - LaunchPulse AI Proxy Integration
- * 
- * This service provides an OpenAI-compatible interface using LaunchPulse's AI proxy.
- * DO NOT install openai SDK or add API keys - this uses LaunchPulse infrastructure.
+ * LaunchPulse AI Client for Expo/React Native
+ *
+ * This client provides an OpenAI-compatible API that routes all AI calls through
+ * the LaunchPulse platform proxy. This allows generated apps to use AI features
+ * without needing to manage their own API keys.
+ *
+ * Environment Variables (auto-injected by LaunchPulse):
+ * - EXPO_PUBLIC_LAUNCHPULSE_AI_KEY: API token for authentication
+ * - EXPO_PUBLIC_LAUNCHPULSE_PROJECT_ID: Project identifier
+ * - EXPO_PUBLIC_LAUNCHPULSE_API_URL: Platform API URL
  */
 
-const API_URL = process.env.EXPO_PUBLIC_LAUNCHPULSE_API_URL || 'https://api.launchpulse.ai';
-const API_KEY = process.env.EXPO_PUBLIC_LAUNCHPULSE_AI_KEY;
-const PROJECT_ID = process.env.EXPO_PUBLIC_LAUNCHPULSE_PROJECT_ID;
+// Get environment variables - works in both Expo and web builds
+const getEnvVar = (key: string): string | undefined => {
+  // For Expo web builds and Node environments
+  if (typeof process !== 'undefined' && process.env) {
+    return (process.env as any)[key];
+  }
+  return undefined;
+};
 
+const env = {
+  LAUNCHPULSE_AI_KEY: getEnvVar('EXPO_PUBLIC_LAUNCHPULSE_AI_KEY'),
+  LAUNCHPULSE_PROJECT_ID: getEnvVar('EXPO_PUBLIC_LAUNCHPULSE_PROJECT_ID'),
+  LAUNCHPULSE_API_URL: getEnvVar('EXPO_PUBLIC_LAUNCHPULSE_API_URL') || 'http://localhost:5173',
+};
+
+const hasLaunchPulseEnv =
+  env.LAUNCHPULSE_AI_KEY &&
+  env.LAUNCHPULSE_PROJECT_ID &&
+  env.LAUNCHPULSE_API_URL;
+
+// AI error class
+class AIError extends Error {
+  type: string;
+  code?: string;
+  credits_remaining?: number;
+
+  constructor(message: string, type: string, code?: string, credits_remaining?: number) {
+    super(message);
+    this.name = 'AIError';
+    this.type = type;
+    this.code = code;
+    this.credits_remaining = credits_remaining;
+  }
+}
+
+// Message types (OpenAI-compatible)
 interface Message {
   role: 'system' | 'user' | 'assistant';
   content: string;
 }
 
-interface ChatCompletionRequest {
+interface ChatCompletionChoice {
+  index: number;
+  message: Message;
+  finish_reason: 'stop' | 'length' | 'content_filter' | null;
+}
+
+interface ChatCompletionUsage {
+  prompt_tokens: number;
+  completion_tokens: number;
+  total_tokens: number;
+}
+
+interface ChatCompletionResponse {
+  id: string;
+  object: 'chat.completion';
+  created: number;
+  model: string;
+  choices: ChatCompletionChoice[];
+  usage?: ChatCompletionUsage;
+}
+
+interface ChatCompletionParams {
   messages: Message[];
+  model?: string;
   temperature?: number;
   max_tokens?: number;
   stream?: boolean;
 }
 
-interface ChatCompletionResponse {
+interface StreamChunk {
   id: string;
-  object: string;
+  object: 'chat.completion.chunk';
   created: number;
   model: string;
   choices: Array<{
     index: number;
-    message: Message;
-    finish_reason: string;
+    delta: { role?: string; content?: string };
+    finish_reason: string | null;
   }>;
-  usage: {
-    prompt_tokens: number;
-    completion_tokens: number;
-    total_tokens: number;
-  };
 }
 
-class AIService {
-  private apiUrl: string;
-  private apiKey: string;
-  private projectId: string;
-
-  constructor() {
-    this.apiUrl = API_URL;
-    this.apiKey = API_KEY || '';
-    this.projectId = PROJECT_ID || '';
-
-    if (!this.apiKey) {
-      console.warn('EXPO_PUBLIC_LAUNCHPULSE_AI_KEY is not set. AI features may not work.');
-    }
-    if (!this.projectId) {
-      console.warn('EXPO_PUBLIC_LAUNCHPULSE_PROJECT_ID is not set. AI features may not work.');
-    }
+// Make request to LaunchPulse AI proxy
+async function makeAIRequest<T>(
+  params: ChatCompletionParams,
+  streaming: false
+): Promise<T>;
+async function makeAIRequest(
+  params: ChatCompletionParams,
+  streaming: true
+): Promise<Response>;
+async function makeAIRequest<T>(
+  params: ChatCompletionParams,
+  streaming: boolean
+): Promise<T | Response> {
+  if (!hasLaunchPulseEnv) {
+    console.warn('LaunchPulse env vars:', env);
+    throw new AIError(
+      'LaunchPulse AI integration not configured. Please check your environment variables.',
+      'configuration_error',
+      'AI_NOT_CONFIGURED'
+    );
   }
 
-  /**
-   * Send a chat completion request to the AI
-   */
-  async chat(request: ChatCompletionRequest): Promise<ChatCompletionResponse> {
+  const response = await fetch(`${env.LAUNCHPULSE_API_URL}/api/ai/proxy`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      projectId: env.LAUNCHPULSE_PROJECT_ID,
+      token: env.LAUNCHPULSE_AI_KEY,
+      messages: params.messages,
+      model: params.model,
+      temperature: params.temperature,
+      max_tokens: params.max_tokens,
+      stream: streaming,
+    }),
+  });
+
+  if (!response.ok) {
+    let error;
     try {
-      const response = await fetch(`${this.apiUrl}/ai/chat`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.apiKey}`,
-          'X-Project-ID': this.projectId,
-        },
-        body: JSON.stringify(request),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || `AI request failed: ${response.status}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error('AI chat error:', error);
-      throw error;
+      const errorData = await response.json();
+      error = (errorData as any).error || { message: 'An error occurred', type: 'api_error' };
+    } catch {
+      error = { message: `Request failed with status ${response.status}`, type: 'api_error' };
     }
+    throw new AIError(error.message, error.type, error.code, error.credits_remaining);
   }
 
-  /**
-   * Ask a single question and get a response
-   * This is a simplified interface for one-off questions
-   */
-  async ask(question: string, systemPrompt?: string): Promise<string> {
-    const messages: Message[] = [];
-    
-    if (systemPrompt) {
-      messages.push({
-        role: 'system',
-        content: systemPrompt,
-      });
-    }
-    
-    messages.push({
-      role: 'user',
-      content: question,
-    });
+  if (streaming) {
+    return response;
+  }
 
-    const response = await this.chat({
+  return response.json() as Promise<T>;
+}
+
+// Parse SSE stream chunks (React Native compatible)
+async function* parseSSEStream(
+  response: Response
+): AsyncGenerator<StreamChunk, void, unknown> {
+  const reader = response.body?.getReader();
+  if (!reader) {
+    throw new AIError('No response body for streaming', 'api_error', 'NO_STREAM_BODY');
+  }
+
+  const decoder = new TextDecoder();
+  let buffer = '';
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop() || '';
+
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed || trimmed === 'data: [DONE]') continue;
+        if (trimmed.startsWith('data: ')) {
+          try {
+            const json = JSON.parse(trimmed.slice(6));
+            yield json as StreamChunk;
+          } catch {
+            // Skip invalid JSON
+          }
+        }
+      }
+    }
+  } finally {
+    reader.releaseLock();
+  }
+}
+
+// AI Client class
+class AIClient {
+  chat = {
+    completions: {
+      /**
+       * Create a chat completion
+       */
+      create: async (params: ChatCompletionParams): Promise<ChatCompletionResponse> => {
+        if (params.stream) {
+          throw new AIError(
+            'Use ai.chat.completions.stream() for streaming responses',
+            'invalid_request_error',
+            'USE_STREAM_METHOD'
+          );
+        }
+        return makeAIRequest<ChatCompletionResponse>(params, false);
+      },
+
+      /**
+       * Create a streaming chat completion
+       */
+      stream: async function* (
+        params: Omit<ChatCompletionParams, 'stream'>
+      ): AsyncGenerator<string, void, unknown> {
+        const response = await makeAIRequest({ ...params, stream: true }, true);
+
+        for await (const chunk of parseSSEStream(response)) {
+          const content = chunk.choices?.[0]?.delta?.content;
+          if (content) {
+            yield content;
+          }
+        }
+      },
+
+      /**
+       * Create a streaming chat completion with full chunk data
+       */
+      streamChunks: async function* (
+        params: Omit<ChatCompletionParams, 'stream'>
+      ): AsyncGenerator<StreamChunk, void, unknown> {
+        const response = await makeAIRequest({ ...params, stream: true }, true);
+        yield* parseSSEStream(response);
+      },
+    },
+  };
+
+  /**
+   * Simple chat helper - send a message and get a response
+   */
+  async ask(
+    content: string,
+    options: {
+      systemPrompt?: string;
+      model?: string;
+      temperature?: number;
+      max_tokens?: number;
+    } = {}
+  ): Promise<string> {
+    const messages: Message[] = [];
+
+    if (options.systemPrompt) {
+      messages.push({ role: 'system', content: options.systemPrompt });
+    }
+
+    messages.push({ role: 'user', content });
+
+    const response = await this.chat.completions.create({
       messages,
-      temperature: 0.7,
-      max_tokens: 500,
+      model: options.model,
+      temperature: options.temperature,
+      max_tokens: options.max_tokens,
     });
 
     return response.choices[0]?.message?.content || '';
@@ -115,7 +268,7 @@ class AIService {
    * Ask a fitness-related question with fitness context
    */
   async askFitness(question: string): Promise<string> {
-    const systemPrompt = `You are a knowledgeable and encouraging fitness assistant for a home workout app. 
+    const systemPrompt = `You are a knowledgeable and encouraging fitness assistant for a home workout app.
 Your role is to:
 - Provide accurate, safe fitness advice
 - Answer questions about exercises, workouts, nutrition, and recovery
@@ -126,12 +279,48 @@ Your role is to:
 
 Always prioritize user safety and proper form.`;
 
-    return this.ask(question, systemPrompt);
+    return this.ask(question, { systemPrompt });
+  }
+
+  /**
+   * Streaming chat helper - send a message and get a streaming response
+   */
+  async *askStream(
+    content: string,
+    options: {
+      systemPrompt?: string;
+      model?: string;
+      temperature?: number;
+      max_tokens?: number;
+    } = {}
+  ): AsyncGenerator<string, void, unknown> {
+    const messages: Message[] = [];
+
+    if (options.systemPrompt) {
+      messages.push({ role: 'system', content: options.systemPrompt });
+    }
+
+    messages.push({ role: 'user', content });
+
+    yield* this.chat.completions.stream({
+      messages,
+      model: options.model,
+      temperature: options.temperature,
+      max_tokens: options.max_tokens,
+    });
   }
 }
 
-// Export singleton instance
-export const ai = new AIService();
+// Export the client
+const ai = new AIClient();
 
-// Export types for use in other files
-export type { Message, ChatCompletionRequest, ChatCompletionResponse };
+export default ai;
+export { ai, AIClient, AIError };
+export type {
+  Message,
+  ChatCompletionChoice,
+  ChatCompletionUsage,
+  ChatCompletionResponse,
+  ChatCompletionParams,
+  StreamChunk,
+};
