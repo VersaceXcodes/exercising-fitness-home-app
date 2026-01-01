@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, ActivityIndicator, View, FlatList, RefreshControl } from 'react-native';
+import { StyleSheet, ActivityIndicator, View, FlatList, RefreshControl, TextInput } from 'react-native';
 import { Image } from 'expo-image';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -19,6 +19,8 @@ interface WorkoutLog {
 
 export default function HistoryScreen() {
   const [logs, setLogs] = useState<WorkoutLog[]>([]);
+  const [filteredLogs, setFilteredLogs] = useState<WorkoutLog[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -34,10 +36,13 @@ export default function HistoryScreen() {
       const response = await apiService.getWorkoutLogs();
       if (Array.isArray(response)) {
         setLogs(response);
+        setFilteredLogs(response);
       } else if (response.data && Array.isArray(response.data)) {
         setLogs(response.data);
+        setFilteredLogs(response.data);
       } else {
         setLogs((response as any) || []);
+        setFilteredLogs((response as any) || []);
       }
     } catch (err) {
       console.error('Failed to load workout history:', err);
@@ -70,6 +75,18 @@ export default function HistoryScreen() {
     });
   };
 
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    if (query.trim() === '') {
+      setFilteredLogs(logs);
+    } else {
+      const filtered = logs.filter(log => 
+        log.workout_title.toLowerCase().includes(query.toLowerCase())
+      );
+      setFilteredLogs(filtered);
+    }
+  };
+
   if (loading && !refreshing && logs.length === 0) {
     return (
       <ThemedView style={styles.centerContainer}>
@@ -85,6 +102,29 @@ export default function HistoryScreen() {
         <ThemedText style={styles.subtitle}>Your completed workouts</ThemedText>
       </View>
 
+      {logs.length > 0 && (
+        <View style={styles.searchContainer}>
+          <View style={styles.searchBar}>
+            <IconSymbol name="magnifyingglass" size={20} color="#666" />
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Search workouts..."
+              placeholderTextColor="#999"
+              value={searchQuery}
+              onChangeText={handleSearch}
+            />
+            {searchQuery.length > 0 && (
+              <IconSymbol 
+                name="xmark.circle.fill" 
+                size={20} 
+                color="#999" 
+                onPress={() => handleSearch('')}
+              />
+            )}
+          </View>
+        </View>
+      )}
+
       {logs.length === 0 && !loading ? (
         <View style={styles.emptyContainer}>
           <IconSymbol name="clock" size={64} color="#ccc" />
@@ -93,11 +133,24 @@ export default function HistoryScreen() {
         </View>
       ) : (
         <FlatList
-          data={logs}
+          data={filteredLogs}
           keyExtractor={(item) => item.id.toString()}
           contentContainerStyle={styles.listContent}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+          ListEmptyComponent={
+            searchQuery.length > 0 ? (
+              <View style={styles.emptySearchContainer}>
+                <IconSymbol name="magnifyingglass" size={48} color="#ccc" />
+                <ThemedText style={styles.emptySearchText}>
+                  No workouts found matching "{searchQuery}"
+                </ThemedText>
+                <ThemedText style={styles.emptySearchSubtext}>
+                  Try a different search term
+                </ThemedText>
+              </View>
+            ) : null
           }
           renderItem={({ item }) => (
             <View style={styles.card}>
@@ -147,6 +200,24 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666',
     marginTop: 4,
+  },
+  searchContainer: {
+    paddingHorizontal: 20,
+    marginBottom: 16,
+  },
+  searchBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f0f0f0',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    gap: 10,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 16,
+    color: '#333',
   },
   listContent: {
     paddingHorizontal: 20,
@@ -218,5 +289,25 @@ const styles = StyleSheet.create({
     color: '#888',
     textAlign: 'center',
     marginTop: 8,
-  }
+  },
+  emptySearchContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 40,
+    marginTop: 60,
+  },
+  emptySearchText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#666',
+    marginTop: 16,
+    textAlign: 'center',
+  },
+  emptySearchSubtext: {
+    fontSize: 14,
+    color: '#888',
+    textAlign: 'center',
+    marginTop: 8,
+  },
 });
