@@ -152,7 +152,7 @@ export default function HomeScreen() {
           <View style={styles.headerTextContainer}>
             <ThemedText style={styles.dateText}>{currentDate}</ThemedText>
             <ThemedText type="title" style={styles.welcomeTitle}>
-              Ready to Workout?
+              Lets workout!
             </ThemedText>
             <ThemedText style={styles.subTitle}>
               Let's get stronger together! 💪
