@@ -281,10 +281,12 @@
     "priority": 1,
     "passes": false,
     "selected": true,
-    "status": "pending",
+    "status": "in_progress",
     "order": 13,
     "source": "user-added",
-    "addedAt": "2025-12-27T21:49:21.431Z"
+    "addedAt": "2025-12-27T21:49:21.431Z",
+    "lastAttemptAt": "2026-01-02T15:49:36.716Z",
+    "attempts": 1
   },
   {
     "id": "weekly-workout-goals-1766872160652",
