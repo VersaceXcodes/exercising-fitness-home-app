@@ -301,6 +301,53 @@ app.get('/api/user/stats', authenticate_token, async (req, res) => {
   }
 });
 
+// Admin stats endpoint
+app.get('/api/admin/stats', authenticate_token, async (req, res) => {
+  try {
+    // Total Users
+    const totalUsersResult = await pool.query('SELECT COUNT(*) FROM users');
+    const totalUsers = parseInt(totalUsersResult.rows[0].count);
+
+    // Active Subscriptions
+    const activeSubsResult = await pool.query("SELECT COUNT(*) FROM users WHERE subscription_status = 'active'");
+    const activeSubscriptions = parseInt(activeSubsResult.rows[0].count);
+
+    // Total Workouts Completed
+    const totalWorkoutsResult = await pool.query('SELECT COUNT(*) FROM workout_logs');
+    const totalWorkouts = parseInt(totalWorkoutsResult.rows[0].count);
+
+    // Most Popular Workouts
+    const popularWorkoutsResult = await pool.query(`
+      SELECT w.title, COUNT(wl.id) as count
+      FROM workout_logs wl
+      JOIN workouts w ON wl.workout_id = w.id
+      GROUP BY w.id, w.title
+      ORDER BY count DESC
+      LIMIT 5
+    `);
+    
+    // Workout Completions Over Time (Last 30 days)
+    const completionsOverTimeResult = await pool.query(`
+      SELECT DATE(created_at) as date, COUNT(*) as count
+      FROM workout_logs
+      WHERE created_at >= NOW() - INTERVAL '30 days'
+      GROUP BY DATE(created_at)
+      ORDER BY DATE(created_at)
+    `);
+
+    res.json({
+      totalUsers,
+      activeSubscriptions,
+      totalWorkouts,
+      popularWorkouts: popularWorkoutsResult.rows,
+      completionsOverTime: completionsOverTimeResult.rows
+    });
+  } catch (error) {
+    console.error('Error fetching admin stats:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 // FAVORITES ROUTES
 
 // Get user favorites

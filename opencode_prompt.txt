@@ -1,17 +1,18 @@
 # Feature Implementation
 
 ## Feature Details
-- **ID**: delete-account-flow-1766872160652
-- **Title**: Implement a permanent account deletion flow for GDPR compliance
-- **Category**: Security
+- **ID**: admin-dashboard-analytics-1767018234680
+- **Title**: Implement an analytics dashboard showing key metrics like total users, active subscriptions, and most popular workouts
+- **Category**: Admin
 
 ## Description
-Implement a permanent account deletion flow for GDPR compliance
+Implement an analytics dashboard showing key metrics like total users, active subscriptions, and most popular workouts
 
 ## Verification Steps
-1. Add DELETE /api/auth/me endpoint in backend/server.ts
-2. Add Delete Account button in expo/app/(tabs)/profile.tsx
-3. Implement confirmation modal and redirect to login on success
+1. Create new backend endpoint GET /api/admin/stats to aggregate counts from users, workouts, and workout_logs tables
+2. Update vitereact/src/services/api.ts to include the new getAdminStats method
+3. Modify vitereact/src/pages/admin/Dashboard.tsx to fetch and display these metrics in a grid layout
+4. Add chart visualization for workout completions over time using a library like recharts
 
 ## Instructions
 1. **Explore**: Review the existing codebase structure and patterns
@@ -19,10 +20,10 @@ Implement a permanent account deletion flow for GDPR compliance
 3. **Implement**: Write clean, production-quality code
 4. **Test**: Verify the feature works as expected
 5. **Update**: Mark feature as "passes": true in feature_list.json
-6. **Commit**: Use message "feat(Security): Implement a permanent account deletion flow for GDPR compliance"
+6. **Commit**: Use message "feat(Admin): Implement an analytics dashboard showing key metrics like total users, active subscriptions, and most popular workouts"
 
 ## Important
-- Implement ONLY this specific feature (ID: delete-account-flow-1766872160652)
+- Implement ONLY this specific feature (ID: admin-dashboard-analytics-1767018234680)
 - Do NOT modify features already marked as passes: true
 - Follow existing code patterns and conventions
 - Maintain backward compatibility

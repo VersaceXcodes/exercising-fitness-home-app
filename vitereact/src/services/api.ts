@@ -131,4 +131,13 @@ export const api = {
     if (!response.ok) throw new Error('Failed to delete exercise');
     return response.json();
   },
+
+  // Admin
+  getAdminStats: async () => {
+    const response = await fetch(`${API_URL}/admin/stats`, {
+      headers: getHeaders(),
+    });
+    if (!response.ok) throw new Error('Failed to fetch admin stats');
+    return response.json();
+  },
 };

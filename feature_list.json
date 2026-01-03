@@ -438,12 +438,14 @@
       "Add chart visualization for workout completions over time using a library like recharts"
     ],
     "priority": 1,
-    "passes": false,
+    "passes": true,
     "selected": true,
-    "status": "pending",
+    "status": "completed",
     "order": 24,
     "source": "user-added",
-    "addedAt": "2025-12-29T14:23:55.767Z"
+    "addedAt": "2025-12-29T14:23:55.767Z",
+    "lastAttemptAt": "2026-01-03T08:13:50.854Z",
+    "attempts": 1
   },
   {
     "id": "workout-exercise-builder-1767018234680",
