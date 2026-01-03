@@ -1,18 +1,17 @@
 # Feature Implementation
 
 ## Feature Details
-- **ID**: workout-exercise-builder-1767018234680
-- **Title**: Create a drag-and-drop interface within the Workout form to assign, order, and configure exercises
-- **Category**: Admin
+- **ID**: audio-voice-cues-1766872160652
+- **Title**: Add text-to-speech audio cues for workout intervals and rest periods
+- **Category**: User Experience
 
 ## Description
-Create a drag-and-drop interface within the Workout form to assign, order, and configure exercises
+Add text-to-speech audio cues for workout intervals and rest periods
 
 ## Verification Steps
-1. Create backend endpoints POST/PUT /api/workouts/:id/exercises to handle batch updates of the workout_exercises join table
-2. Update vitereact/src/pages/admin/WorkoutForm.tsx to include an 'Exercise Picker' modal
-3. Implement a list component in the form to manage order_index, default_sets, and default_reps for selected exercises
-4. Add validation to ensure a workout has at least one exercise before publishing
+1. Install expo-speech in expo/package.json
+2. Implement speech triggers in expo/app/workout/[id].tsx for start/stop/rest events
+3. Add mute toggle in the active workout header
 
 ## Instructions
 1. **Explore**: Review the existing codebase structure and patterns
@@ -20,10 +19,10 @@ Create a drag-and-drop interface within the Workout form to assign, order, and c
 3. **Implement**: Write clean, production-quality code
 4. **Test**: Verify the feature works as expected
 5. **Update**: Mark feature as "passes": true in feature_list.json
-6. **Commit**: Use message "feat(Admin): Create a drag-and-drop interface within the Workout form to assign, order, and configure exercises"
+6. **Commit**: Use message "feat(User Experience): Add text-to-speech audio cues for workout intervals and rest periods"
 
 ## Important
-- Implement ONLY this specific feature (ID: workout-exercise-builder-1767018234680)
+- Implement ONLY this specific feature (ID: audio-voice-cues-1766872160652)
 - Do NOT modify features already marked as passes: true
 - Follow existing code patterns and conventions
 - Maintain backward compatibility

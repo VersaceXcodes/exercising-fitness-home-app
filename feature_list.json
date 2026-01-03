@@ -247,10 +247,12 @@
     "priority": 2,
     "passes": false,
     "selected": true,
-    "status": "pending",
+    "status": "in_progress",
     "order": 15,
     "source": "user-added",
-    "addedAt": "2025-12-27T21:49:21.431Z"
+    "addedAt": "2025-12-27T21:49:21.431Z",
+    "lastAttemptAt": "2026-01-03T08:24:57.347Z",
+    "attempts": 1
   },
   {
     "id": "body-metrics-tracker-1766872160652",
@@ -465,8 +467,9 @@
     "order": 25,
     "source": "user-added",
     "addedAt": "2025-12-29T14:23:55.767Z",
-    "lastAttemptAt": "2026-01-03T08:19:12.340Z",
-    "attempts": 1
+    "lastAttemptAt": "2026-01-03T08:24:52.397Z",
+    "attempts": 1,
+    "completedAt": "2026-01-03T08:24:52.397Z"
   },
   {
     "id": "user-management-system-1767018234680",
