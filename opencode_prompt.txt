@@ -1,18 +1,18 @@
 # Feature Implementation
 
 ## Feature Details
-- **ID**: admin-dashboard-analytics-1767018234680
-- **Title**: Implement an analytics dashboard showing key metrics like total users, active subscriptions, and most popular workouts
+- **ID**: workout-exercise-builder-1767018234680
+- **Title**: Create a drag-and-drop interface within the Workout form to assign, order, and configure exercises
 - **Category**: Admin
 
 ## Description
-Implement an analytics dashboard showing key metrics like total users, active subscriptions, and most popular workouts
+Create a drag-and-drop interface within the Workout form to assign, order, and configure exercises
 
 ## Verification Steps
-1. Create new backend endpoint GET /api/admin/stats to aggregate counts from users, workouts, and workout_logs tables
-2. Update vitereact/src/services/api.ts to include the new getAdminStats method
-3. Modify vitereact/src/pages/admin/Dashboard.tsx to fetch and display these metrics in a grid layout
-4. Add chart visualization for workout completions over time using a library like recharts
+1. Create backend endpoints POST/PUT /api/workouts/:id/exercises to handle batch updates of the workout_exercises join table
+2. Update vitereact/src/pages/admin/WorkoutForm.tsx to include an 'Exercise Picker' modal
+3. Implement a list component in the form to manage order_index, default_sets, and default_reps for selected exercises
+4. Add validation to ensure a workout has at least one exercise before publishing
 
 ## Instructions
 1. **Explore**: Review the existing codebase structure and patterns
@@ -20,10 +20,10 @@ Implement an analytics dashboard showing key metrics like total users, active su
 3. **Implement**: Write clean, production-quality code
 4. **Test**: Verify the feature works as expected
 5. **Update**: Mark feature as "passes": true in feature_list.json
-6. **Commit**: Use message "feat(Admin): Implement an analytics dashboard showing key metrics like total users, active subscriptions, and most popular workouts"
+6. **Commit**: Use message "feat(Admin): Create a drag-and-drop interface within the Workout form to assign, order, and configure exercises"
 
 ## Important
-- Implement ONLY this specific feature (ID: admin-dashboard-analytics-1767018234680)
+- Implement ONLY this specific feature (ID: workout-exercise-builder-1767018234680)
 - Do NOT modify features already marked as passes: true
 - Follow existing code patterns and conventions
 - Maintain backward compatibility
