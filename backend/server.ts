@@ -574,6 +574,49 @@ app.delete('/api/workouts/:id', authenticate_token, async (req, res) => {
   }
 });
 
+// Update workout exercises
+app.put('/api/workouts/:id/exercises', authenticate_token, async (req, res) => {
+  const client = await pool.connect();
+  try {
+    const { id } = req.params;
+    const { exercises } = req.body; // Array of { exercise_id, order_index, default_sets, default_reps }
+
+    if (!Array.isArray(exercises)) {
+      return res.status(400).json({ message: 'Exercises must be an array' });
+    }
+
+    await client.query('BEGIN');
+
+    // 1. Delete existing exercises for this workout
+    await client.query('DELETE FROM workout_exercises WHERE workout_id = $1', [id]);
+
+    // 2. Insert new exercises
+    if (exercises.length > 0) {
+      // Sanitize and construct values string safely? 
+      // Better to use a parameterized query loop or unnest for safety against SQL injection if data comes from user.
+      // However, constructing a massive VALUES string with parameters is tricky. 
+      // Let's loop for safety or use a slightly more complex query generation.
+      
+      for (let i = 0; i < exercises.length; i++) {
+        const ex = exercises[i];
+        await client.query(
+          'INSERT INTO workout_exercises (workout_id, exercise_id, order_index, default_sets, default_reps) VALUES ($1, $2, $3, $4, $5)',
+          [id, ex.exercise_id, ex.order_index ?? i, ex.default_sets || 3, ex.default_reps || 10]
+        );
+      }
+    }
+
+    await client.query('COMMIT');
+    res.json({ message: 'Workout exercises updated successfully' });
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('Error updating workout exercises:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  } finally {
+    client.release();
+  }
+});
+
 // EXERCISE ROUTES
 
 // Get all exercises

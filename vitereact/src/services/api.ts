@@ -132,6 +132,25 @@ export const api = {
     return response.json();
   },
 
+  // Workout Exercises
+  getWorkoutExercises: async (workoutId: number | string): Promise<any[]> => {
+    const response = await fetch(`${API_URL}/workouts/${workoutId}/exercises`, {
+       headers: getHeaders(),
+    });
+    if (!response.ok) throw new Error('Failed to fetch workout exercises');
+    return response.json();
+  },
+
+  updateWorkoutExercises: async (workoutId: number | string, exercises: any[]): Promise<void> => {
+    const response = await fetch(`${API_URL}/workouts/${workoutId}/exercises`, {
+      method: 'PUT',
+      headers: getHeaders(),
+      body: JSON.stringify({ exercises }),
+    });
+    if (!response.ok) throw new Error('Failed to update workout exercises');
+    return response.json();
+  },
+
   // Admin
   getAdminStats: async () => {
     const response = await fetch(`${API_URL}/admin/stats`, {
